@@ -1,0 +1,256 @@
+class Boolean () is {
+   def static true() : Integer := 1
+   def static false() : Integer := 0
+}
+   
+class TriNombre() is {
+/* representation d'entiers POSITIFS ou NULS arbitrairement grands par tranches
+ * de nombres inferieurs a 1000.
+ * Ex: 33259 est represente par une liste a deux elements 33 et 259
+ */
+    auto trinome: Integer;
+    /* 'last' palie le fait qu'on n'a rien pour representer NULL */
+    auto last: Integer;
+    auto suivant: TriNombre;  /* valeur arbitraire si last = Boolean.false() */
+
+   def TriNombre() is { this.trinome := 0; this.last := Boolean.true();} 
+
+
+   def reset() is {
+       if this.last = Boolean.false() then this.suivant.reset(); else {}
+       this.last := Boolean.true(); this.trinome := 0;
+   }
+
+   def lier(triSuivant:TriNombre) : TriNombre is {
+       if this.last =  Boolean.true() then {
+          this.suivant := triSuivant; this.last :=  Boolean.false();
+       } else { "Erreur dans TriNombre::lier".println(); }
+       result := this;
+   }
+
+    def assurerCapacite(capa:Integer) : TriNombre  is {
+        if capa <= 1 then {
+	/* rien */
+        } else {
+          if this.last = Boolean.true() then {
+             this.lier(new TriNombre());
+	  } else { /* rien */ }
+	  this.suivant.assurerCapacite(capa - 1);
+	}
+        result := this;
+    }
+
+    def copier(tri:TriNombre) is {
+       this.trinome := tri.trinome();
+       if tri.last() = Boolean.false() then {
+          this.assurerCapacite(2);
+          this.suivant.copier(tri.suivant());
+       } else { this.last = Boolean.true(); }
+    }
+
+    def affecter(nombre:Integer) : Integer is {
+      reste: Integer;
+    is
+      reste := nombre / 1000;
+      this.trinome := nombre - (reste * 1000);
+      if reste > 0 then {
+         this.assurerCapacite(2);
+         result := this.suivant.affecter(reste) + 1;
+      } else { this.last = Boolean.true(); result := 1; }
+    }
+
+    def additionner(nombre:Integer) : Integer is {
+        somme: Integer;
+	is
+        somme := this.trinome + nombre;
+	if nombre > 0 then {
+	   if somme >= 1000 then {
+	      div: Integer;
+	      is
+	      div := somme / 1000;
+	      this.trinome := somme - (div * 1000);
+	      this.assurerCapacite(2);
+	      result := this.suivant.additionner(div) + 1;
+	   } else { this.trinome := somme; result := 1; }
+	} else result := 1;
+    }
+
+    def additionnerTri(tri:TriNombre) : Integer is {
+	somme, nb1, nb2: Integer;
+	is
+	somme := this.trinome + tri.trinome();
+	if somme >= 1000 then {
+	   this.trinome := somme - 1000;
+	   this.assurerCapacite(2);
+	   nb1 := this.suivant.additionner(1);
+	} else { this.trinome := somme; nb1 := 1; }
+	if this.last = Boolean.true() then { result := nb1; }
+	else {
+	   this.assurerCapacite(2);
+           result := this.suivant.additionnerTri(tri.suivant());
+	}
+    }
+
+   def multiplier(nb: Integer) : Integer is {
+	if nb = 0 then { this.affecter(0); result := 1;
+	} else {
+	    nb1, nb2, res: Integer;
+	    is
+	    nb1 := 0; nb2 := 0;
+	    if this.last = Boolean.false() then
+               nb1 := this.suivant.multiplier(nb)+1; else nb1 := 1;
+	    this.trinome := this.trinome * nb;
+	    if this.trinome >= 1000 then {
+	       reste: Integer;
+	       is
+	       reste := this.trinome / 1000;
+	       this.trinome := this.trinome - reste * 1000;
+	       this.assurerCapacite(2);
+	       nb2 := this.suivant.additionner(reste) + 1;
+	    } else { }
+           if nb2 > nb1 then result := nb2; else result := nb1;
+	}
+    }
+
+    def imprimer(nb:Integer) is {
+	if nb >= 1 then {
+	   if nb > 1 then {
+	      if this.last = Boolean.false() then
+	          this.suivant.imprimer(nb - 1); else { }
+	      " ".print();
+	      if this.trinome < 100 then 0.toString().print(); else { }
+	      if this.trinome < 10 then 0.toString().print(); else { }
+	   } else { }
+	   this.trinome.toString().print();
+	} else { }
+    }
+}
+
+class GrandNombre() is {
+   auto nombre: TriNombre;
+   auto nbTri: Integer;
+
+   def GrandNombre() is {
+       this.nombre := new TriNombre(); this.nbTri := 1;
+   }
+
+   def copier(gn:GrandNombre) : GrandNombre is {
+       result := this;
+       this.nombre.reset();
+       this.nombre.assurerCapacite(gn.nbTri());
+       this.nombre.copier(gn.nombre());
+       this.nbTri := gn.nbTri();
+    }
+
+    def init(valeur:Integer) is {
+       this.nombre.reset();
+       this.nbTri := this.calculerNbTri(valeur);
+       if this.nbTri = 0 then this.nbTri := 1; else { }
+       this.nombre.assurerCapacite(this.nbTri);
+       this.nombre.affecter(valeur);
+    }
+
+    def calculerNbTri(valeur:Integer) : Integer is {
+	if valeur > 0 then result :=  1 + this.calculerNbTri(valeur/1000);
+        else result := 0;
+    }
+
+    def additionner(nb:Integer) : Integer is {
+	nbTriAffecte: Integer;
+        is
+	nbTriAffecte := this.nombre.additionner(nb);
+	if this.nbTri < nbTriAffecte then this.nbTri := nbTriAffecte; else { }
+	if this.nbTri = 0 then this.nbTri := 1; else { }
+        result := this.nbTri;
+    }
+
+    def additionnerGN(gn:GrandNombre) : Integer is {
+	nbTriAffecte:Integer;
+	is
+	nbTriAffecte := this.nombre.additionnerTri(gn.nombre());
+	if this.nbTri < nbTriAffecte then this.nbTri := nbTriAffecte; else { }
+	if this.nbTri = 0 then this.nbTri := 1; else { }
+        result := this.nbTri;
+    }
+
+    def multiplier(nb: Integer) : Integer is {
+	this.nbTri := this.nombre.multiplier(nb);
+	if this.nbTri = 0 then this.nbTri := 1; else { }
+        result := this.nbTri;
+    }
+
+   /* fonction auxiliaire */
+   def affecter(nb:Integer) : Integer is {
+	this.nbTri := this.nombre.affecter(nb);
+        result := this.nbTri;
+    }
+
+    def imprimer() is { this.nombre.imprimer(this.nbTri); "".println(); }
+}
+
+
+class Test() is {
+   def static test1(num, cible: Integer, res: GrandNombre) is {
+        if num <= cible then {
+	   /* additionner renvoie un Integer (qu'on ignore) et modifie res */
+	   res.additionner(num);
+	   Test.test1(num+1, cible, res);
+	} else { }
+    }
+
+    def static test2(num, cible: Integer, gn: GrandNombre) is {
+        if num <= cible then {
+           num.toString().print(); "! ".print();
+	   /* sert juste a aligner les = dans les impressions */
+           if num < 10 then " ".print(); else {}
+           "= ".print();
+	   gn.multiplier(num); gn.imprimer();
+	   Test.test2(num+1, cible, gn);
+	} else { }
+    }
+}
+{
+  gn, gn2, gn3, gn4, un: GrandNombre;
+  is
+  gn := new GrandNombre();
+  gn2 := new GrandNombre();
+  gn3 := new GrandNombre();
+  gn4 := new GrandNombre();
+  un := new GrandNombre();
+
+  "Nombre de termes pour representer ".print();
+  33259.toString().print(); " => ".print();
+  gn.calculerNbTri(33259).toString().println();
+
+  "ICI";
+  gn.init(33259); gn.imprimer();
+    /* attention a ne pas depasser la capacite d'un entier dans l'argument
+     * de init sinon des l'analyse lexicale on n'aura pas la bonne valeur
+     */
+  gn.init(1123456789); gn.imprimer();
+
+  gn2.init(7230); gn3.init(32400);
+  gn2.imprimer();  gn3.imprimer();
+
+  gn2.additionner(32400); gn2.imprimer();
+
+  gn4.init(7230); gn4.additionnerGN(gn3); gn4.imprimer();
+
+  gn.copier(gn3); gn.imprimer();
+  gn.copier(gn2).imprimer();
+
+  gn4.init(1); gn.copier(gn4).imprimer();
+  gn.init(0); gn.imprimer();
+
+
+  gn.init(999999); gn.additionner(1); gn.imprimer();
+
+  gn.init(0);
+  "Somme des entiers de 1 à 100:".println();
+  Test.test1(1, 100, gn);
+  gn.imprimer();
+
+  un.init(1);
+  "Table des factorielles de 1 a 30 :".println();
+  Test.test2(1, 30,  un);
+}
