@@ -2,7 +2,8 @@
 open Ast
 %}
 
-%token <string> ID IDCLASS
+%token <string> ID 
+%token <string> IDCLASS
 %token <int> CSTE
 %token <Ast.opComp> RELOP
 %token PLUS MINUS TIMES DIV
@@ -13,6 +14,19 @@ open Ast
 
 %token EOF
 
+%token RETURN
+%token DEF
+%token CLASS
+%token IS
+%token EXTENDS
+%token LCURL RCURL COMMA COLON (* RCURL : {   LCURL : } *)
+%token AUTO STATIC
+%token WALRUS (*  :=  (morse) *)
+%token OVERRIDE
+
+%token THIS SUPER RESULT
+%token DOT
+%token NEW
 
 (*=============== START GRAMMAIRE ===================*)
 
@@ -22,31 +36,26 @@ prog: list(classe) bloc EOF { }
 
 
 (*================ CLASS ==================*)
-%token CLASS
-%token IS
-%token EXTENDS
-%token LCURL RCURL COMMA COLON (* RCURL : {   LCURL : } *)
-%token AUTO STATIC
-%token WALRUS (*  :=  (morse) *)
-%token OVERRIDE
+
 
 classe :
-    | CLASS nomClass = IDCLASS LPAREN lparamOpt RPAREN heriteOpt IS LCURL construcCorpsOpt RCURL { }
+    | CLASS nomClasse = IDCLASS LPAREN lparamOpt RPAREN heriteOpt IS LCURL construcCorpsOpt RCURL { }
 
 lparamOpt:
-    | separated_list(COMMA, param)
+    | separated_list(COMMA, param) { }
 
 param :
     | separated_nonempty_list(COMMA, ID) COLON IDCLASS { }
 
 (* class mere *)
 heriteOpt :
-    | option(EXTENDS nomClassParent = IDCLASS)
+    |nomClasseParent = option(extClasse) { }
 
+extClasse : EXTENDS IDCLASS { }
 
 construcCorpsOpt :
     | construcOblCorpsOpt { }
-    | lcorps
+    | lcorps { }
 
 (* corp de la class *)
 construcOblCorpsOpt :
@@ -54,19 +63,21 @@ construcOblCorpsOpt :
     | methode construcOblCorpsOpt { }
     | constructeur lcorps { }
 
-lcorps : list(corps)
+lcorps : list(corps) { }
 
 corps : 
-    | methode    
-    | champ
+    | methode { } 
+    | champ { }
 
 (*=============== DECLARATION CONSTRUCTEUR ===================*)
 
 constructeur : 
-    | DEF nomClass = IDCLASS LPAREN lparamOpt RPAREN superOpt IS bloc { }
+    | DEF nomClasse = IDCLASS LPAREN lparamOpt RPAREN superOpt IS bloc { }
 
 superOpt :
-    | option(COLON nomClass = IDCLASS LPAREN lparamOpt RPAREN) { }
+    | option(super) { }
+
+super : COLON nomClasse = IDCLASS LPAREN lparamOpt RPAREN { }
 
 (*=============== DECLARATION CHAMP ===================*)
 
@@ -80,16 +91,14 @@ methode : DEF option(OVERRIDE) option(STATIC) nom = ID LPAREN lparamOpt RPAREN s
 
 suiteMethode : 
     | COLON nomClasse = IDCLASS WALRUS expression { }
-    | classOPT IS bloc { }
+    | classOpt IS bloc { }
 
 classOpt :
-    | option(COLON nomClasse = IDCLASS) { }
+    | option(estClass) { }
 
+estClass : COLON nomClasse = IDCLASS { }
 
 (*================ DECLARATION EXPRESSION ==================*)
-%token THIS SUPER RESULT
-%token DOT
-%token NEW
 
 acces :
     | THIS { }
@@ -105,8 +114,8 @@ expression :
     | LPAREN expression RPAREN { }
     | LPAREN nomClasse = IDCLASS expression RPAREN { }
     | expression DOT nomChamp = ID  { }  
-    | acces
-    | NEW nomClasse = IDCLASS LPAREN largOpt RPAREN { }
+    | acces { }
+    | NEW nomClasse = IDCLASS del = delimited(LPAREN, largOpt, RPAREN) { }
     | expression DOT nomMethode = ID LPAREN largOpt RPAREN { }
     | g = expression PLUS d = expression { }
     | g = expression MINUS d = expression { }   
@@ -122,7 +131,7 @@ instruction :
     | bloc { }
     | RETURN SEMICOLON { }
     | nomVar = ID WALRUS expression SEMICOLON { }
-    | IF expression THEN t = instruction ELSE e = instruction
+    | IF expression THEN t = instruction ELSE e = instruction { }
 
 (*============= DECLARATION BLOC =====================*)
 
@@ -135,7 +144,7 @@ blocInner :
     | nonempty_list(declaVar) IS nonempty_list(instruction) { }
 
 declaVar :
-    | separated_list(COMMA, nom = ID) COLON nomClasse = IDCLASS SEMICOLON { }
+    | lnom = separated_list(COMMA, ID) COLON nomClasse = IDCLASS SEMICOLON { }
 
 
 

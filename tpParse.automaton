@@ -1,0 +1,2017 @@
+State 0:
+## Known stack suffix:
+##
+## LR(1) items:
+prog' -> . prog [ # ]
+## Transitions:
+-- On CLASS shift to state 1
+-- On prog shift to state 153
+-- On list(classe) shift to state 154
+-- On classe shift to state 157
+## Reductions:
+-- On LCURL
+--   reduce production list(classe) ->
+
+State 1:
+## Known stack suffix:
+## CLASS
+## LR(1) items:
+classe -> CLASS . IDCLASS LPAREN lparamOpt RPAREN heriteOpt IS LCURL construcCorpsOpt RCURL [ LCURL CLASS ]
+## Transitions:
+-- On IDCLASS shift to state 2
+## Reductions:
+
+State 2:
+## Known stack suffix:
+## CLASS IDCLASS
+## LR(1) items:
+classe -> CLASS IDCLASS . LPAREN lparamOpt RPAREN heriteOpt IS LCURL construcCorpsOpt RCURL [ LCURL CLASS ]
+## Transitions:
+-- On LPAREN shift to state 3
+## Reductions:
+
+State 3:
+## Known stack suffix:
+## CLASS IDCLASS LPAREN
+## LR(1) items:
+classe -> CLASS IDCLASS LPAREN . lparamOpt RPAREN heriteOpt IS LCURL construcCorpsOpt RCURL [ LCURL CLASS ]
+## Transitions:
+-- On ID shift to state 4
+-- On separated_nonempty_list(COMMA,param) shift to state 7
+-- On separated_nonempty_list(COMMA,ID) shift to state 8
+-- On param shift to state 11
+-- On lparamOpt shift to state 14
+-- On loption(separated_nonempty_list(COMMA,param)) shift to state 34
+## Reductions:
+-- On RPAREN
+--   reduce production loption(separated_nonempty_list(COMMA,param)) ->
+
+State 4:
+## Known stack suffix:
+## ID
+## LR(1) items:
+separated_nonempty_list(COMMA,ID) -> ID . [ COLON ]
+separated_nonempty_list(COMMA,ID) -> ID . COMMA separated_nonempty_list(COMMA,ID) [ COLON ]
+## Transitions:
+-- On COMMA shift to state 5
+## Reductions:
+-- On COLON
+--   reduce production separated_nonempty_list(COMMA,ID) -> ID
+
+State 5:
+## Known stack suffix:
+## ID COMMA
+## LR(1) items:
+separated_nonempty_list(COMMA,ID) -> ID COMMA . separated_nonempty_list(COMMA,ID) [ COLON ]
+## Transitions:
+-- On ID shift to state 4
+-- On separated_nonempty_list(COMMA,ID) shift to state 6
+## Reductions:
+
+State 6:
+## Known stack suffix:
+## ID COMMA separated_nonempty_list(COMMA,ID)
+## LR(1) items:
+separated_nonempty_list(COMMA,ID) -> ID COMMA separated_nonempty_list(COMMA,ID) . [ COLON ]
+## Transitions:
+## Reductions:
+-- On COLON
+--   reduce production separated_nonempty_list(COMMA,ID) -> ID COMMA separated_nonempty_list(COMMA,ID)
+
+State 7:
+## Known stack suffix:
+## separated_nonempty_list(COMMA,param)
+## LR(1) items:
+loption(separated_nonempty_list(COMMA,param)) -> separated_nonempty_list(COMMA,param) . [ RPAREN ]
+## Transitions:
+## Reductions:
+-- On RPAREN
+--   reduce production loption(separated_nonempty_list(COMMA,param)) -> separated_nonempty_list(COMMA,param)
+
+State 8:
+## Known stack suffix:
+## separated_nonempty_list(COMMA,ID)
+## LR(1) items:
+param -> separated_nonempty_list(COMMA,ID) . COLON IDCLASS [ RPAREN COMMA ]
+## Transitions:
+-- On COLON shift to state 9
+## Reductions:
+
+State 9:
+## Known stack suffix:
+## separated_nonempty_list(COMMA,ID) COLON
+## LR(1) items:
+param -> separated_nonempty_list(COMMA,ID) COLON . IDCLASS [ RPAREN COMMA ]
+## Transitions:
+-- On IDCLASS shift to state 10
+## Reductions:
+
+State 10:
+## Known stack suffix:
+## separated_nonempty_list(COMMA,ID) COLON IDCLASS
+## LR(1) items:
+param -> separated_nonempty_list(COMMA,ID) COLON IDCLASS . [ RPAREN COMMA ]
+## Transitions:
+## Reductions:
+-- On RPAREN COMMA
+--   reduce production param -> separated_nonempty_list(COMMA,ID) COLON IDCLASS
+
+State 11:
+## Known stack suffix:
+## param
+## LR(1) items:
+separated_nonempty_list(COMMA,param) -> param . [ RPAREN ]
+separated_nonempty_list(COMMA,param) -> param . COMMA separated_nonempty_list(COMMA,param) [ RPAREN ]
+## Transitions:
+-- On COMMA shift to state 12
+## Reductions:
+-- On RPAREN
+--   reduce production separated_nonempty_list(COMMA,param) -> param
+
+State 12:
+## Known stack suffix:
+## param COMMA
+## LR(1) items:
+separated_nonempty_list(COMMA,param) -> param COMMA . separated_nonempty_list(COMMA,param) [ RPAREN ]
+## Transitions:
+-- On ID shift to state 4
+-- On separated_nonempty_list(COMMA,param) shift to state 13
+-- On separated_nonempty_list(COMMA,ID) shift to state 8
+-- On param shift to state 11
+## Reductions:
+
+State 13:
+## Known stack suffix:
+## param COMMA separated_nonempty_list(COMMA,param)
+## LR(1) items:
+separated_nonempty_list(COMMA,param) -> param COMMA separated_nonempty_list(COMMA,param) . [ RPAREN ]
+## Transitions:
+## Reductions:
+-- On RPAREN
+--   reduce production separated_nonempty_list(COMMA,param) -> param COMMA separated_nonempty_list(COMMA,param)
+
+State 14:
+## Known stack suffix:
+## CLASS IDCLASS LPAREN lparamOpt
+## LR(1) items:
+classe -> CLASS IDCLASS LPAREN lparamOpt . RPAREN heriteOpt IS LCURL construcCorpsOpt RCURL [ LCURL CLASS ]
+## Transitions:
+-- On RPAREN shift to state 15
+## Reductions:
+
+State 15:
+## Known stack suffix:
+## CLASS IDCLASS LPAREN lparamOpt RPAREN
+## LR(1) items:
+classe -> CLASS IDCLASS LPAREN lparamOpt RPAREN . heriteOpt IS LCURL construcCorpsOpt RCURL [ LCURL CLASS ]
+## Transitions:
+-- On EXTENDS shift to state 16
+-- On option(extClasse) shift to state 18
+-- On heriteOpt shift to state 19
+-- On extClasse shift to state 152
+## Reductions:
+-- On IS
+--   reduce production option(extClasse) ->
+
+State 16:
+## Known stack suffix:
+## EXTENDS
+## LR(1) items:
+extClasse -> EXTENDS . IDCLASS [ IS ]
+## Transitions:
+-- On IDCLASS shift to state 17
+## Reductions:
+
+State 17:
+## Known stack suffix:
+## EXTENDS IDCLASS
+## LR(1) items:
+extClasse -> EXTENDS IDCLASS . [ IS ]
+## Transitions:
+## Reductions:
+-- On IS
+--   reduce production extClasse -> EXTENDS IDCLASS
+
+State 18:
+## Known stack suffix:
+## option(extClasse)
+## LR(1) items:
+heriteOpt -> option(extClasse) . [ IS ]
+## Transitions:
+## Reductions:
+-- On IS
+--   reduce production heriteOpt -> option(extClasse)
+
+State 19:
+## Known stack suffix:
+## CLASS IDCLASS LPAREN lparamOpt RPAREN heriteOpt
+## LR(1) items:
+classe -> CLASS IDCLASS LPAREN lparamOpt RPAREN heriteOpt . IS LCURL construcCorpsOpt RCURL [ LCURL CLASS ]
+## Transitions:
+-- On IS shift to state 20
+## Reductions:
+
+State 20:
+## Known stack suffix:
+## CLASS IDCLASS LPAREN lparamOpt RPAREN heriteOpt IS
+## LR(1) items:
+classe -> CLASS IDCLASS LPAREN lparamOpt RPAREN heriteOpt IS . LCURL construcCorpsOpt RCURL [ LCURL CLASS ]
+## Transitions:
+-- On LCURL shift to state 21
+## Reductions:
+
+State 21:
+## Known stack suffix:
+## CLASS IDCLASS LPAREN lparamOpt RPAREN heriteOpt IS LCURL
+## LR(1) items:
+classe -> CLASS IDCLASS LPAREN lparamOpt RPAREN heriteOpt IS LCURL . construcCorpsOpt RCURL [ LCURL CLASS ]
+## Transitions:
+-- On STATIC shift to state 22
+-- On DEF shift to state 23
+-- On option(STATIC) shift to state 127
+-- On methode shift to state 134
+-- On list(corps) shift to state 139
+-- On lcorps shift to state 147
+-- On corps shift to state 141
+-- On constructeur shift to state 136
+-- On construcOblCorpsOpt shift to state 148
+-- On construcCorpsOpt shift to state 149
+-- On champ shift to state 151
+## Reductions:
+-- On RCURL
+--   reduce production list(corps) ->
+-- On ID AUTO
+--   reduce production option(STATIC) ->
+
+State 22:
+## Known stack suffix:
+## STATIC
+## LR(1) items:
+option(STATIC) -> STATIC . [ ID AUTO ]
+## Transitions:
+## Reductions:
+-- On ID AUTO
+--   reduce production option(STATIC) -> STATIC
+
+State 23:
+## Known stack suffix:
+## DEF
+## LR(1) items:
+constructeur -> DEF . IDCLASS LPAREN lparamOpt RPAREN superOpt IS bloc [ STATIC RCURL ID DEF AUTO ]
+methode -> DEF . option(OVERRIDE) option(STATIC) ID LPAREN lparamOpt RPAREN suiteMethode [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On OVERRIDE shift to state 24
+-- On IDCLASS shift to state 25
+-- On option(OVERRIDE) shift to state 111
+## Reductions:
+-- On STATIC ID
+--   reduce production option(OVERRIDE) ->
+
+State 24:
+## Known stack suffix:
+## OVERRIDE
+## LR(1) items:
+option(OVERRIDE) -> OVERRIDE . [ STATIC ID ]
+## Transitions:
+## Reductions:
+-- On STATIC ID
+--   reduce production option(OVERRIDE) -> OVERRIDE
+
+State 25:
+## Known stack suffix:
+## DEF IDCLASS
+## LR(1) items:
+constructeur -> DEF IDCLASS . LPAREN lparamOpt RPAREN superOpt IS bloc [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On LPAREN shift to state 26
+## Reductions:
+
+State 26:
+## Known stack suffix:
+## DEF IDCLASS LPAREN
+## LR(1) items:
+constructeur -> DEF IDCLASS LPAREN . lparamOpt RPAREN superOpt IS bloc [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On ID shift to state 4
+-- On separated_nonempty_list(COMMA,param) shift to state 7
+-- On separated_nonempty_list(COMMA,ID) shift to state 8
+-- On param shift to state 11
+-- On lparamOpt shift to state 27
+-- On loption(separated_nonempty_list(COMMA,param)) shift to state 34
+## Reductions:
+-- On RPAREN
+--   reduce production loption(separated_nonempty_list(COMMA,param)) ->
+
+State 27:
+## Known stack suffix:
+## DEF IDCLASS LPAREN lparamOpt
+## LR(1) items:
+constructeur -> DEF IDCLASS LPAREN lparamOpt . RPAREN superOpt IS bloc [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On RPAREN shift to state 28
+## Reductions:
+
+State 28:
+## Known stack suffix:
+## DEF IDCLASS LPAREN lparamOpt RPAREN
+## LR(1) items:
+constructeur -> DEF IDCLASS LPAREN lparamOpt RPAREN . superOpt IS bloc [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On COLON shift to state 29
+-- On superOpt shift to state 35
+-- On super shift to state 109
+-- On option(super) shift to state 110
+## Reductions:
+-- On IS
+--   reduce production option(super) ->
+
+State 29:
+## Known stack suffix:
+## COLON
+## LR(1) items:
+super -> COLON . IDCLASS LPAREN lparamOpt RPAREN [ IS ]
+## Transitions:
+-- On IDCLASS shift to state 30
+## Reductions:
+
+State 30:
+## Known stack suffix:
+## COLON IDCLASS
+## LR(1) items:
+super -> COLON IDCLASS . LPAREN lparamOpt RPAREN [ IS ]
+## Transitions:
+-- On LPAREN shift to state 31
+## Reductions:
+
+State 31:
+## Known stack suffix:
+## COLON IDCLASS LPAREN
+## LR(1) items:
+super -> COLON IDCLASS LPAREN . lparamOpt RPAREN [ IS ]
+## Transitions:
+-- On ID shift to state 4
+-- On separated_nonempty_list(COMMA,param) shift to state 7
+-- On separated_nonempty_list(COMMA,ID) shift to state 8
+-- On param shift to state 11
+-- On lparamOpt shift to state 32
+-- On loption(separated_nonempty_list(COMMA,param)) shift to state 34
+## Reductions:
+-- On RPAREN
+--   reduce production loption(separated_nonempty_list(COMMA,param)) ->
+
+State 32:
+## Known stack suffix:
+## COLON IDCLASS LPAREN lparamOpt
+## LR(1) items:
+super -> COLON IDCLASS LPAREN lparamOpt . RPAREN [ IS ]
+## Transitions:
+-- On RPAREN shift to state 33
+## Reductions:
+
+State 33:
+## Known stack suffix:
+## COLON IDCLASS LPAREN lparamOpt RPAREN
+## LR(1) items:
+super -> COLON IDCLASS LPAREN lparamOpt RPAREN . [ IS ]
+## Transitions:
+## Reductions:
+-- On IS
+--   reduce production super -> COLON IDCLASS LPAREN lparamOpt RPAREN
+
+State 34:
+## Known stack suffix:
+## loption(separated_nonempty_list(COMMA,param))
+## LR(1) items:
+lparamOpt -> loption(separated_nonempty_list(COMMA,param)) . [ RPAREN ]
+## Transitions:
+## Reductions:
+-- On RPAREN
+--   reduce production lparamOpt -> loption(separated_nonempty_list(COMMA,param))
+
+State 35:
+## Known stack suffix:
+## DEF IDCLASS LPAREN lparamOpt RPAREN superOpt
+## LR(1) items:
+constructeur -> DEF IDCLASS LPAREN lparamOpt RPAREN superOpt . IS bloc [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On IS shift to state 36
+## Reductions:
+
+State 36:
+## Known stack suffix:
+## DEF IDCLASS LPAREN lparamOpt RPAREN superOpt IS
+## LR(1) items:
+constructeur -> DEF IDCLASS LPAREN lparamOpt RPAREN superOpt IS . bloc [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On LCURL shift to state 37
+-- On bloc shift to state 108
+## Reductions:
+
+State 37:
+## Known stack suffix:
+## LCURL
+## LR(1) items:
+bloc -> LCURL . blocInner RCURL [ THIS SUPER STATIC RETURN RESULT RCURL NEW LPAREN LCURL IF ID EOF ELSE DEF CSTE AUTO ]
+bloc -> LCURL . bloc RCURL [ THIS SUPER STATIC RETURN RESULT RCURL NEW LPAREN LCURL IF ID EOF ELSE DEF CSTE AUTO ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RETURN shift to state 40
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On LCURL shift to state 37
+-- On IF shift to state 75
+-- On ID shift to state 88
+-- On CSTE shift to state 49
+-- On separated_nonempty_list(COMMA,ID) shift to state 89
+-- On nonempty_list(declaVar) shift to state 90
+-- On loption(separated_nonempty_list(COMMA,ID)) shift to state 95
+-- On list(instruction) shift to state 99
+-- On instruction shift to state 100
+-- On expression shift to state 85
+-- On declaVar shift to state 102
+-- On blocInner shift to state 104
+-- On bloc shift to state 106
+-- On acces shift to state 67
+## Reductions:
+-- On RCURL
+--   reduce production list(instruction) ->
+-- On COLON
+--   reduce production loption(separated_nonempty_list(COMMA,ID)) ->
+
+State 38:
+## Known stack suffix:
+## THIS
+## LR(1) items:
+acces -> THIS . [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+## Reductions:
+-- On TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO
+--   reduce production acces -> THIS
+
+State 39:
+## Known stack suffix:
+## SUPER
+## LR(1) items:
+acces -> SUPER . [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+## Reductions:
+-- On TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO
+--   reduce production acces -> SUPER
+
+State 40:
+## Known stack suffix:
+## RETURN
+## LR(1) items:
+instruction -> RETURN . SEMICOLON [ THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE ]
+## Transitions:
+-- On SEMICOLON shift to state 41
+## Reductions:
+
+State 41:
+## Known stack suffix:
+## RETURN SEMICOLON
+## LR(1) items:
+instruction -> RETURN SEMICOLON . [ THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE ]
+## Transitions:
+## Reductions:
+-- On THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE
+--   reduce production instruction -> RETURN SEMICOLON
+
+State 42:
+## Known stack suffix:
+## RESULT
+## LR(1) items:
+acces -> RESULT . [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+## Reductions:
+-- On TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO
+--   reduce production acces -> RESULT
+
+State 43:
+## Known stack suffix:
+## NEW
+## LR(1) items:
+expression -> NEW . IDCLASS LPAREN largOpt RPAREN [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On IDCLASS shift to state 44
+## Reductions:
+
+State 44:
+## Known stack suffix:
+## NEW IDCLASS
+## LR(1) items:
+expression -> NEW IDCLASS . LPAREN largOpt RPAREN [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On LPAREN shift to state 45
+## Reductions:
+
+State 45:
+## Known stack suffix:
+## NEW IDCLASS LPAREN
+## LR(1) items:
+expression -> NEW IDCLASS LPAREN . largOpt RPAREN [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On ID shift to state 48
+-- On CSTE shift to state 49
+-- On separated_nonempty_list(COMMA,expression) shift to state 60
+-- On loption(separated_nonempty_list(COMMA,expression)) shift to state 61
+-- On largOpt shift to state 73
+-- On expression shift to state 64
+-- On acces shift to state 67
+## Reductions:
+-- On RPAREN
+--   reduce production loption(separated_nonempty_list(COMMA,expression)) ->
+
+State 46:
+## Known stack suffix:
+## LPAREN
+## LR(1) items:
+expression -> LPAREN . expression RPAREN [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> LPAREN . IDCLASS expression RPAREN [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On IDCLASS shift to state 47
+-- On ID shift to state 48
+-- On CSTE shift to state 49
+-- On expression shift to state 71
+-- On acces shift to state 67
+## Reductions:
+
+State 47:
+## Known stack suffix:
+## LPAREN IDCLASS
+## LR(1) items:
+expression -> LPAREN IDCLASS . expression RPAREN [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On ID shift to state 48
+-- On CSTE shift to state 49
+-- On expression shift to state 50
+-- On acces shift to state 67
+## Reductions:
+
+State 48:
+## Known stack suffix:
+## ID
+## LR(1) items:
+expression -> ID . [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+## Reductions:
+-- On TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO
+--   reduce production expression -> ID
+
+State 49:
+## Known stack suffix:
+## CSTE
+## LR(1) items:
+expression -> CSTE . [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+## Reductions:
+-- On TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO
+--   reduce production expression -> CSTE
+
+State 50:
+## Known stack suffix:
+## LPAREN IDCLASS expression
+## LR(1) items:
+expression -> LPAREN IDCLASS expression . RPAREN [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . DOT ID [ TIMES RPAREN PLUS MINUS DOT DIV ]
+expression -> expression . DOT ID LPAREN largOpt RPAREN [ TIMES RPAREN PLUS MINUS DOT DIV ]
+expression -> expression . PLUS expression [ TIMES RPAREN PLUS MINUS DOT DIV ]
+expression -> expression . MINUS expression [ TIMES RPAREN PLUS MINUS DOT DIV ]
+expression -> expression . TIMES expression [ TIMES RPAREN PLUS MINUS DOT DIV ]
+expression -> expression . DIV expression [ TIMES RPAREN PLUS MINUS DOT DIV ]
+## Transitions:
+-- On TIMES shift to state 51
+-- On RPAREN shift to state 70
+-- On PLUS shift to state 53
+-- On MINUS shift to state 55
+-- On DOT shift to state 57
+-- On DIV shift to state 65
+## Reductions:
+
+State 51:
+## Known stack suffix:
+## expression TIMES
+## LR(1) items:
+expression -> expression TIMES . expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On ID shift to state 48
+-- On CSTE shift to state 49
+-- On expression shift to state 52
+-- On acces shift to state 67
+## Reductions:
+
+State 52:
+## Known stack suffix:
+## expression TIMES expression
+## LR(1) items:
+expression -> expression . DOT ID [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . DOT ID LPAREN largOpt RPAREN [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . PLUS expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . MINUS expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . TIMES expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression TIMES expression . [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . DIV expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On TIMES shift to state 51
+-- On PLUS shift to state 53
+-- On MINUS shift to state 55
+-- On DOT shift to state 57
+-- On DIV shift to state 65
+## Reductions:
+-- On TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO
+--   reduce production expression -> expression TIMES expression
+** Conflict on TIMES PLUS MINUS DOT DIV
+
+State 53:
+## Known stack suffix:
+## expression PLUS
+## LR(1) items:
+expression -> expression PLUS . expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On ID shift to state 48
+-- On CSTE shift to state 49
+-- On expression shift to state 54
+-- On acces shift to state 67
+## Reductions:
+
+State 54:
+## Known stack suffix:
+## expression PLUS expression
+## LR(1) items:
+expression -> expression . DOT ID [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . DOT ID LPAREN largOpt RPAREN [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . PLUS expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression PLUS expression . [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . MINUS expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . TIMES expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . DIV expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On TIMES shift to state 51
+-- On PLUS shift to state 53
+-- On MINUS shift to state 55
+-- On DOT shift to state 57
+-- On DIV shift to state 65
+## Reductions:
+-- On TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO
+--   reduce production expression -> expression PLUS expression
+** Conflict on TIMES PLUS MINUS DOT DIV
+
+State 55:
+## Known stack suffix:
+## expression MINUS
+## LR(1) items:
+expression -> expression MINUS . expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On ID shift to state 48
+-- On CSTE shift to state 49
+-- On expression shift to state 56
+-- On acces shift to state 67
+## Reductions:
+
+State 56:
+## Known stack suffix:
+## expression MINUS expression
+## LR(1) items:
+expression -> expression . DOT ID [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . DOT ID LPAREN largOpt RPAREN [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . PLUS expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . MINUS expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression MINUS expression . [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . TIMES expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . DIV expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On TIMES shift to state 51
+-- On PLUS shift to state 53
+-- On MINUS shift to state 55
+-- On DOT shift to state 57
+-- On DIV shift to state 65
+## Reductions:
+-- On TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO
+--   reduce production expression -> expression MINUS expression
+** Conflict on TIMES PLUS MINUS DOT DIV
+
+State 57:
+## Known stack suffix:
+## expression DOT
+## LR(1) items:
+expression -> expression DOT . ID [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression DOT . ID LPAREN largOpt RPAREN [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On ID shift to state 58
+## Reductions:
+
+State 58:
+## Known stack suffix:
+## expression DOT ID
+## LR(1) items:
+expression -> expression DOT ID . [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression DOT ID . LPAREN largOpt RPAREN [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On LPAREN shift to state 59
+## Reductions:
+-- On TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO
+--   reduce production expression -> expression DOT ID
+
+State 59:
+## Known stack suffix:
+## expression DOT ID LPAREN
+## LR(1) items:
+expression -> expression DOT ID LPAREN . largOpt RPAREN [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On ID shift to state 48
+-- On CSTE shift to state 49
+-- On separated_nonempty_list(COMMA,expression) shift to state 60
+-- On loption(separated_nonempty_list(COMMA,expression)) shift to state 61
+-- On largOpt shift to state 62
+-- On expression shift to state 64
+-- On acces shift to state 67
+## Reductions:
+-- On RPAREN
+--   reduce production loption(separated_nonempty_list(COMMA,expression)) ->
+
+State 60:
+## Known stack suffix:
+## separated_nonempty_list(COMMA,expression)
+## LR(1) items:
+loption(separated_nonempty_list(COMMA,expression)) -> separated_nonempty_list(COMMA,expression) . [ RPAREN ]
+## Transitions:
+## Reductions:
+-- On RPAREN
+--   reduce production loption(separated_nonempty_list(COMMA,expression)) -> separated_nonempty_list(COMMA,expression)
+
+State 61:
+## Known stack suffix:
+## loption(separated_nonempty_list(COMMA,expression))
+## LR(1) items:
+largOpt -> loption(separated_nonempty_list(COMMA,expression)) . [ RPAREN ]
+## Transitions:
+## Reductions:
+-- On RPAREN
+--   reduce production largOpt -> loption(separated_nonempty_list(COMMA,expression))
+
+State 62:
+## Known stack suffix:
+## expression DOT ID LPAREN largOpt
+## LR(1) items:
+expression -> expression DOT ID LPAREN largOpt . RPAREN [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On RPAREN shift to state 63
+## Reductions:
+
+State 63:
+## Known stack suffix:
+## expression DOT ID LPAREN largOpt RPAREN
+## LR(1) items:
+expression -> expression DOT ID LPAREN largOpt RPAREN . [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+## Reductions:
+-- On TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO
+--   reduce production expression -> expression DOT ID LPAREN largOpt RPAREN
+
+State 64:
+## Known stack suffix:
+## expression
+## LR(1) items:
+expression -> expression . DOT ID [ TIMES RPAREN PLUS MINUS DOT DIV COMMA ]
+expression -> expression . DOT ID LPAREN largOpt RPAREN [ TIMES RPAREN PLUS MINUS DOT DIV COMMA ]
+expression -> expression . PLUS expression [ TIMES RPAREN PLUS MINUS DOT DIV COMMA ]
+expression -> expression . MINUS expression [ TIMES RPAREN PLUS MINUS DOT DIV COMMA ]
+expression -> expression . TIMES expression [ TIMES RPAREN PLUS MINUS DOT DIV COMMA ]
+expression -> expression . DIV expression [ TIMES RPAREN PLUS MINUS DOT DIV COMMA ]
+separated_nonempty_list(COMMA,expression) -> expression . [ RPAREN ]
+separated_nonempty_list(COMMA,expression) -> expression . COMMA separated_nonempty_list(COMMA,expression) [ RPAREN ]
+## Transitions:
+-- On TIMES shift to state 51
+-- On PLUS shift to state 53
+-- On MINUS shift to state 55
+-- On DOT shift to state 57
+-- On DIV shift to state 65
+-- On COMMA shift to state 68
+## Reductions:
+-- On RPAREN
+--   reduce production separated_nonempty_list(COMMA,expression) -> expression
+
+State 65:
+## Known stack suffix:
+## expression DIV
+## LR(1) items:
+expression -> expression DIV . expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On ID shift to state 48
+-- On CSTE shift to state 49
+-- On expression shift to state 66
+-- On acces shift to state 67
+## Reductions:
+
+State 66:
+## Known stack suffix:
+## expression DIV expression
+## LR(1) items:
+expression -> expression . DOT ID [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . DOT ID LPAREN largOpt RPAREN [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . PLUS expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . MINUS expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . TIMES expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . DIV expression [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression DIV expression . [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On TIMES shift to state 51
+-- On PLUS shift to state 53
+-- On MINUS shift to state 55
+-- On DOT shift to state 57
+-- On DIV shift to state 65
+## Reductions:
+-- On TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO
+--   reduce production expression -> expression DIV expression
+** Conflict on TIMES PLUS MINUS DOT DIV
+
+State 67:
+## Known stack suffix:
+## acces
+## LR(1) items:
+expression -> acces . [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+## Reductions:
+-- On TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO
+--   reduce production expression -> acces
+
+State 68:
+## Known stack suffix:
+## expression COMMA
+## LR(1) items:
+separated_nonempty_list(COMMA,expression) -> expression COMMA . separated_nonempty_list(COMMA,expression) [ RPAREN ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On ID shift to state 48
+-- On CSTE shift to state 49
+-- On separated_nonempty_list(COMMA,expression) shift to state 69
+-- On expression shift to state 64
+-- On acces shift to state 67
+## Reductions:
+
+State 69:
+## Known stack suffix:
+## expression COMMA separated_nonempty_list(COMMA,expression)
+## LR(1) items:
+separated_nonempty_list(COMMA,expression) -> expression COMMA separated_nonempty_list(COMMA,expression) . [ RPAREN ]
+## Transitions:
+## Reductions:
+-- On RPAREN
+--   reduce production separated_nonempty_list(COMMA,expression) -> expression COMMA separated_nonempty_list(COMMA,expression)
+
+State 70:
+## Known stack suffix:
+## LPAREN IDCLASS expression RPAREN
+## LR(1) items:
+expression -> LPAREN IDCLASS expression RPAREN . [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+## Reductions:
+-- On TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO
+--   reduce production expression -> LPAREN IDCLASS expression RPAREN
+
+State 71:
+## Known stack suffix:
+## LPAREN expression
+## LR(1) items:
+expression -> LPAREN expression . RPAREN [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+expression -> expression . DOT ID [ TIMES RPAREN PLUS MINUS DOT DIV ]
+expression -> expression . DOT ID LPAREN largOpt RPAREN [ TIMES RPAREN PLUS MINUS DOT DIV ]
+expression -> expression . PLUS expression [ TIMES RPAREN PLUS MINUS DOT DIV ]
+expression -> expression . MINUS expression [ TIMES RPAREN PLUS MINUS DOT DIV ]
+expression -> expression . TIMES expression [ TIMES RPAREN PLUS MINUS DOT DIV ]
+expression -> expression . DIV expression [ TIMES RPAREN PLUS MINUS DOT DIV ]
+## Transitions:
+-- On TIMES shift to state 51
+-- On RPAREN shift to state 72
+-- On PLUS shift to state 53
+-- On MINUS shift to state 55
+-- On DOT shift to state 57
+-- On DIV shift to state 65
+## Reductions:
+
+State 72:
+## Known stack suffix:
+## LPAREN expression RPAREN
+## LR(1) items:
+expression -> LPAREN expression RPAREN . [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+## Reductions:
+-- On TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO
+--   reduce production expression -> LPAREN expression RPAREN
+
+State 73:
+## Known stack suffix:
+## NEW IDCLASS LPAREN largOpt
+## LR(1) items:
+expression -> NEW IDCLASS LPAREN largOpt . RPAREN [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+-- On RPAREN shift to state 74
+## Reductions:
+
+State 74:
+## Known stack suffix:
+## NEW IDCLASS LPAREN largOpt RPAREN
+## LR(1) items:
+expression -> NEW IDCLASS LPAREN largOpt RPAREN . [ TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO ]
+## Transitions:
+## Reductions:
+-- On TIMES THEN STATIC SEMICOLON RPAREN RCURL PLUS MINUS ID DOT DIV DEF COMMA AUTO
+--   reduce production expression -> NEW IDCLASS LPAREN largOpt RPAREN
+
+State 75:
+## Known stack suffix:
+## IF
+## LR(1) items:
+instruction -> IF . expression THEN instruction ELSE instruction [ THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On ID shift to state 48
+-- On CSTE shift to state 49
+-- On expression shift to state 76
+-- On acces shift to state 67
+## Reductions:
+
+State 76:
+## Known stack suffix:
+## IF expression
+## LR(1) items:
+expression -> expression . DOT ID [ TIMES THEN PLUS MINUS DOT DIV ]
+expression -> expression . DOT ID LPAREN largOpt RPAREN [ TIMES THEN PLUS MINUS DOT DIV ]
+expression -> expression . PLUS expression [ TIMES THEN PLUS MINUS DOT DIV ]
+expression -> expression . MINUS expression [ TIMES THEN PLUS MINUS DOT DIV ]
+expression -> expression . TIMES expression [ TIMES THEN PLUS MINUS DOT DIV ]
+expression -> expression . DIV expression [ TIMES THEN PLUS MINUS DOT DIV ]
+instruction -> IF expression . THEN instruction ELSE instruction [ THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE ]
+## Transitions:
+-- On TIMES shift to state 51
+-- On THEN shift to state 77
+-- On PLUS shift to state 53
+-- On MINUS shift to state 55
+-- On DOT shift to state 57
+-- On DIV shift to state 65
+## Reductions:
+
+State 77:
+## Known stack suffix:
+## IF expression THEN
+## LR(1) items:
+instruction -> IF expression THEN . instruction ELSE instruction [ THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RETURN shift to state 40
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On LCURL shift to state 37
+-- On IF shift to state 75
+-- On ID shift to state 78
+-- On CSTE shift to state 49
+-- On instruction shift to state 82
+-- On expression shift to state 85
+-- On bloc shift to state 87
+-- On acces shift to state 67
+## Reductions:
+
+State 78:
+## Known stack suffix:
+## ID
+## LR(1) items:
+expression -> ID . [ TIMES SEMICOLON PLUS MINUS DOT DIV ]
+instruction -> ID . WALRUS expression SEMICOLON [ THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE ]
+## Transitions:
+-- On WALRUS shift to state 79
+## Reductions:
+-- On TIMES SEMICOLON PLUS MINUS DOT DIV
+--   reduce production expression -> ID
+
+State 79:
+## Known stack suffix:
+## ID WALRUS
+## LR(1) items:
+instruction -> ID WALRUS . expression SEMICOLON [ THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On ID shift to state 48
+-- On CSTE shift to state 49
+-- On expression shift to state 80
+-- On acces shift to state 67
+## Reductions:
+
+State 80:
+## Known stack suffix:
+## ID WALRUS expression
+## LR(1) items:
+expression -> expression . DOT ID [ TIMES SEMICOLON PLUS MINUS DOT DIV ]
+expression -> expression . DOT ID LPAREN largOpt RPAREN [ TIMES SEMICOLON PLUS MINUS DOT DIV ]
+expression -> expression . PLUS expression [ TIMES SEMICOLON PLUS MINUS DOT DIV ]
+expression -> expression . MINUS expression [ TIMES SEMICOLON PLUS MINUS DOT DIV ]
+expression -> expression . TIMES expression [ TIMES SEMICOLON PLUS MINUS DOT DIV ]
+expression -> expression . DIV expression [ TIMES SEMICOLON PLUS MINUS DOT DIV ]
+instruction -> ID WALRUS expression . SEMICOLON [ THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE ]
+## Transitions:
+-- On TIMES shift to state 51
+-- On SEMICOLON shift to state 81
+-- On PLUS shift to state 53
+-- On MINUS shift to state 55
+-- On DOT shift to state 57
+-- On DIV shift to state 65
+## Reductions:
+
+State 81:
+## Known stack suffix:
+## ID WALRUS expression SEMICOLON
+## LR(1) items:
+instruction -> ID WALRUS expression SEMICOLON . [ THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE ]
+## Transitions:
+## Reductions:
+-- On THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE
+--   reduce production instruction -> ID WALRUS expression SEMICOLON
+
+State 82:
+## Known stack suffix:
+## IF expression THEN instruction
+## LR(1) items:
+instruction -> IF expression THEN instruction . ELSE instruction [ THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE ]
+## Transitions:
+-- On ELSE shift to state 83
+## Reductions:
+
+State 83:
+## Known stack suffix:
+## IF expression THEN instruction ELSE
+## LR(1) items:
+instruction -> IF expression THEN instruction ELSE . instruction [ THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RETURN shift to state 40
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On LCURL shift to state 37
+-- On IF shift to state 75
+-- On ID shift to state 78
+-- On CSTE shift to state 49
+-- On instruction shift to state 84
+-- On expression shift to state 85
+-- On bloc shift to state 87
+-- On acces shift to state 67
+## Reductions:
+
+State 84:
+## Known stack suffix:
+## IF expression THEN instruction ELSE instruction
+## LR(1) items:
+instruction -> IF expression THEN instruction ELSE instruction . [ THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE ]
+## Transitions:
+## Reductions:
+-- On THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE
+--   reduce production instruction -> IF expression THEN instruction ELSE instruction
+
+State 85:
+## Known stack suffix:
+## expression
+## LR(1) items:
+expression -> expression . DOT ID [ TIMES SEMICOLON PLUS MINUS DOT DIV ]
+expression -> expression . DOT ID LPAREN largOpt RPAREN [ TIMES SEMICOLON PLUS MINUS DOT DIV ]
+expression -> expression . PLUS expression [ TIMES SEMICOLON PLUS MINUS DOT DIV ]
+expression -> expression . MINUS expression [ TIMES SEMICOLON PLUS MINUS DOT DIV ]
+expression -> expression . TIMES expression [ TIMES SEMICOLON PLUS MINUS DOT DIV ]
+expression -> expression . DIV expression [ TIMES SEMICOLON PLUS MINUS DOT DIV ]
+instruction -> expression . SEMICOLON [ THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE ]
+## Transitions:
+-- On TIMES shift to state 51
+-- On SEMICOLON shift to state 86
+-- On PLUS shift to state 53
+-- On MINUS shift to state 55
+-- On DOT shift to state 57
+-- On DIV shift to state 65
+## Reductions:
+
+State 86:
+## Known stack suffix:
+## expression SEMICOLON
+## LR(1) items:
+instruction -> expression SEMICOLON . [ THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE ]
+## Transitions:
+## Reductions:
+-- On THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE
+--   reduce production instruction -> expression SEMICOLON
+
+State 87:
+## Known stack suffix:
+## bloc
+## LR(1) items:
+instruction -> bloc . [ THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE ]
+## Transitions:
+## Reductions:
+-- On THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID ELSE CSTE
+--   reduce production instruction -> bloc
+
+State 88:
+## Known stack suffix:
+## ID
+## LR(1) items:
+expression -> ID . [ TIMES SEMICOLON PLUS MINUS DOT DIV ]
+instruction -> ID . WALRUS expression SEMICOLON [ THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID CSTE ]
+separated_nonempty_list(COMMA,ID) -> ID . [ COLON ]
+separated_nonempty_list(COMMA,ID) -> ID . COMMA separated_nonempty_list(COMMA,ID) [ COLON ]
+## Transitions:
+-- On WALRUS shift to state 79
+-- On COMMA shift to state 5
+## Reductions:
+-- On TIMES SEMICOLON PLUS MINUS DOT DIV
+--   reduce production expression -> ID
+-- On COLON
+--   reduce production separated_nonempty_list(COMMA,ID) -> ID
+
+State 89:
+## Known stack suffix:
+## separated_nonempty_list(COMMA,ID)
+## LR(1) items:
+loption(separated_nonempty_list(COMMA,ID)) -> separated_nonempty_list(COMMA,ID) . [ COLON ]
+## Transitions:
+## Reductions:
+-- On COLON
+--   reduce production loption(separated_nonempty_list(COMMA,ID)) -> separated_nonempty_list(COMMA,ID)
+
+State 90:
+## Known stack suffix:
+## nonempty_list(declaVar)
+## LR(1) items:
+blocInner -> nonempty_list(declaVar) . IS nonempty_list(instruction) [ RCURL ]
+## Transitions:
+-- On IS shift to state 91
+## Reductions:
+
+State 91:
+## Known stack suffix:
+## nonempty_list(declaVar) IS
+## LR(1) items:
+blocInner -> nonempty_list(declaVar) IS . nonempty_list(instruction) [ RCURL ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RETURN shift to state 40
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On LCURL shift to state 37
+-- On IF shift to state 75
+-- On ID shift to state 78
+-- On CSTE shift to state 49
+-- On nonempty_list(instruction) shift to state 92
+-- On instruction shift to state 93
+-- On expression shift to state 85
+-- On bloc shift to state 87
+-- On acces shift to state 67
+## Reductions:
+
+State 92:
+## Known stack suffix:
+## nonempty_list(declaVar) IS nonempty_list(instruction)
+## LR(1) items:
+blocInner -> nonempty_list(declaVar) IS nonempty_list(instruction) . [ RCURL ]
+## Transitions:
+## Reductions:
+-- On RCURL
+--   reduce production blocInner -> nonempty_list(declaVar) IS nonempty_list(instruction)
+
+State 93:
+## Known stack suffix:
+## instruction
+## LR(1) items:
+nonempty_list(instruction) -> instruction . [ RCURL ]
+nonempty_list(instruction) -> instruction . nonempty_list(instruction) [ RCURL ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RETURN shift to state 40
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On LCURL shift to state 37
+-- On IF shift to state 75
+-- On ID shift to state 78
+-- On CSTE shift to state 49
+-- On nonempty_list(instruction) shift to state 94
+-- On instruction shift to state 93
+-- On expression shift to state 85
+-- On bloc shift to state 87
+-- On acces shift to state 67
+## Reductions:
+-- On RCURL
+--   reduce production nonempty_list(instruction) -> instruction
+
+State 94:
+## Known stack suffix:
+## instruction nonempty_list(instruction)
+## LR(1) items:
+nonempty_list(instruction) -> instruction nonempty_list(instruction) . [ RCURL ]
+## Transitions:
+## Reductions:
+-- On RCURL
+--   reduce production nonempty_list(instruction) -> instruction nonempty_list(instruction)
+
+State 95:
+## Known stack suffix:
+## loption(separated_nonempty_list(COMMA,ID))
+## LR(1) items:
+declaVar -> loption(separated_nonempty_list(COMMA,ID)) . COLON IDCLASS SEMICOLON [ IS ID COLON ]
+## Transitions:
+-- On COLON shift to state 96
+## Reductions:
+
+State 96:
+## Known stack suffix:
+## loption(separated_nonempty_list(COMMA,ID)) COLON
+## LR(1) items:
+declaVar -> loption(separated_nonempty_list(COMMA,ID)) COLON . IDCLASS SEMICOLON [ IS ID COLON ]
+## Transitions:
+-- On IDCLASS shift to state 97
+## Reductions:
+
+State 97:
+## Known stack suffix:
+## loption(separated_nonempty_list(COMMA,ID)) COLON IDCLASS
+## LR(1) items:
+declaVar -> loption(separated_nonempty_list(COMMA,ID)) COLON IDCLASS . SEMICOLON [ IS ID COLON ]
+## Transitions:
+-- On SEMICOLON shift to state 98
+## Reductions:
+
+State 98:
+## Known stack suffix:
+## loption(separated_nonempty_list(COMMA,ID)) COLON IDCLASS SEMICOLON
+## LR(1) items:
+declaVar -> loption(separated_nonempty_list(COMMA,ID)) COLON IDCLASS SEMICOLON . [ IS ID COLON ]
+## Transitions:
+## Reductions:
+-- On IS ID COLON
+--   reduce production declaVar -> loption(separated_nonempty_list(COMMA,ID)) COLON IDCLASS SEMICOLON
+
+State 99:
+## Known stack suffix:
+## list(instruction)
+## LR(1) items:
+blocInner -> list(instruction) . [ RCURL ]
+## Transitions:
+## Reductions:
+-- On RCURL
+--   reduce production blocInner -> list(instruction)
+
+State 100:
+## Known stack suffix:
+## instruction
+## LR(1) items:
+list(instruction) -> instruction . list(instruction) [ RCURL ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RETURN shift to state 40
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On LCURL shift to state 37
+-- On IF shift to state 75
+-- On ID shift to state 78
+-- On CSTE shift to state 49
+-- On list(instruction) shift to state 101
+-- On instruction shift to state 100
+-- On expression shift to state 85
+-- On bloc shift to state 87
+-- On acces shift to state 67
+## Reductions:
+-- On RCURL
+--   reduce production list(instruction) ->
+
+State 101:
+## Known stack suffix:
+## instruction list(instruction)
+## LR(1) items:
+list(instruction) -> instruction list(instruction) . [ RCURL ]
+## Transitions:
+## Reductions:
+-- On RCURL
+--   reduce production list(instruction) -> instruction list(instruction)
+
+State 102:
+## Known stack suffix:
+## declaVar
+## LR(1) items:
+nonempty_list(declaVar) -> declaVar . [ IS ]
+nonempty_list(declaVar) -> declaVar . nonempty_list(declaVar) [ IS ]
+## Transitions:
+-- On ID shift to state 4
+-- On separated_nonempty_list(COMMA,ID) shift to state 89
+-- On nonempty_list(declaVar) shift to state 103
+-- On loption(separated_nonempty_list(COMMA,ID)) shift to state 95
+-- On declaVar shift to state 102
+## Reductions:
+-- On COLON
+--   reduce production loption(separated_nonempty_list(COMMA,ID)) ->
+-- On IS
+--   reduce production nonempty_list(declaVar) -> declaVar
+
+State 103:
+## Known stack suffix:
+## declaVar nonempty_list(declaVar)
+## LR(1) items:
+nonempty_list(declaVar) -> declaVar nonempty_list(declaVar) . [ IS ]
+## Transitions:
+## Reductions:
+-- On IS
+--   reduce production nonempty_list(declaVar) -> declaVar nonempty_list(declaVar)
+
+State 104:
+## Known stack suffix:
+## LCURL blocInner
+## LR(1) items:
+bloc -> LCURL blocInner . RCURL [ THIS SUPER STATIC RETURN RESULT RCURL NEW LPAREN LCURL IF ID EOF ELSE DEF CSTE AUTO ]
+## Transitions:
+-- On RCURL shift to state 105
+## Reductions:
+
+State 105:
+## Known stack suffix:
+## LCURL blocInner RCURL
+## LR(1) items:
+bloc -> LCURL blocInner RCURL . [ THIS SUPER STATIC RETURN RESULT RCURL NEW LPAREN LCURL IF ID EOF ELSE DEF CSTE AUTO ]
+## Transitions:
+## Reductions:
+-- On THIS SUPER STATIC RETURN RESULT RCURL NEW LPAREN LCURL IF ID EOF ELSE DEF CSTE AUTO
+--   reduce production bloc -> LCURL blocInner RCURL
+
+State 106:
+## Known stack suffix:
+## LCURL bloc
+## LR(1) items:
+bloc -> LCURL bloc . RCURL [ THIS SUPER STATIC RETURN RESULT RCURL NEW LPAREN LCURL IF ID EOF ELSE DEF CSTE AUTO ]
+instruction -> bloc . [ THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID CSTE ]
+## Transitions:
+-- On RCURL shift to state 107
+## Reductions:
+-- On THIS SUPER RETURN RESULT RCURL NEW LPAREN LCURL IF ID CSTE
+--   reduce production instruction -> bloc
+** Conflict on RCURL
+
+State 107:
+## Known stack suffix:
+## LCURL bloc RCURL
+## LR(1) items:
+bloc -> LCURL bloc RCURL . [ THIS SUPER STATIC RETURN RESULT RCURL NEW LPAREN LCURL IF ID EOF ELSE DEF CSTE AUTO ]
+## Transitions:
+## Reductions:
+-- On THIS SUPER STATIC RETURN RESULT RCURL NEW LPAREN LCURL IF ID EOF ELSE DEF CSTE AUTO
+--   reduce production bloc -> LCURL bloc RCURL
+
+State 108:
+## Known stack suffix:
+## DEF IDCLASS LPAREN lparamOpt RPAREN superOpt IS bloc
+## LR(1) items:
+constructeur -> DEF IDCLASS LPAREN lparamOpt RPAREN superOpt IS bloc . [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+## Reductions:
+-- On STATIC RCURL ID DEF AUTO
+--   reduce production constructeur -> DEF IDCLASS LPAREN lparamOpt RPAREN superOpt IS bloc
+
+State 109:
+## Known stack suffix:
+## super
+## LR(1) items:
+option(super) -> super . [ IS ]
+## Transitions:
+## Reductions:
+-- On IS
+--   reduce production option(super) -> super
+
+State 110:
+## Known stack suffix:
+## option(super)
+## LR(1) items:
+superOpt -> option(super) . [ IS ]
+## Transitions:
+## Reductions:
+-- On IS
+--   reduce production superOpt -> option(super)
+
+State 111:
+## Known stack suffix:
+## DEF option(OVERRIDE)
+## LR(1) items:
+methode -> DEF option(OVERRIDE) . option(STATIC) ID LPAREN lparamOpt RPAREN suiteMethode [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On STATIC shift to state 22
+-- On option(STATIC) shift to state 112
+## Reductions:
+-- On ID
+--   reduce production option(STATIC) ->
+
+State 112:
+## Known stack suffix:
+## DEF option(OVERRIDE) option(STATIC)
+## LR(1) items:
+methode -> DEF option(OVERRIDE) option(STATIC) . ID LPAREN lparamOpt RPAREN suiteMethode [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On ID shift to state 113
+## Reductions:
+
+State 113:
+## Known stack suffix:
+## DEF option(OVERRIDE) option(STATIC) ID
+## LR(1) items:
+methode -> DEF option(OVERRIDE) option(STATIC) ID . LPAREN lparamOpt RPAREN suiteMethode [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On LPAREN shift to state 114
+## Reductions:
+
+State 114:
+## Known stack suffix:
+## DEF option(OVERRIDE) option(STATIC) ID LPAREN
+## LR(1) items:
+methode -> DEF option(OVERRIDE) option(STATIC) ID LPAREN . lparamOpt RPAREN suiteMethode [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On ID shift to state 4
+-- On separated_nonempty_list(COMMA,param) shift to state 7
+-- On separated_nonempty_list(COMMA,ID) shift to state 8
+-- On param shift to state 11
+-- On lparamOpt shift to state 115
+-- On loption(separated_nonempty_list(COMMA,param)) shift to state 34
+## Reductions:
+-- On RPAREN
+--   reduce production loption(separated_nonempty_list(COMMA,param)) ->
+
+State 115:
+## Known stack suffix:
+## DEF option(OVERRIDE) option(STATIC) ID LPAREN lparamOpt
+## LR(1) items:
+methode -> DEF option(OVERRIDE) option(STATIC) ID LPAREN lparamOpt . RPAREN suiteMethode [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On RPAREN shift to state 116
+## Reductions:
+
+State 116:
+## Known stack suffix:
+## DEF option(OVERRIDE) option(STATIC) ID LPAREN lparamOpt RPAREN
+## LR(1) items:
+methode -> DEF option(OVERRIDE) option(STATIC) ID LPAREN lparamOpt RPAREN . suiteMethode [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On COLON shift to state 117
+-- On suiteMethode shift to state 121
+-- On option(estClass) shift to state 122
+-- On estClass shift to state 123
+-- On classOpt shift to state 124
+## Reductions:
+-- On IS
+--   reduce production option(estClass) ->
+
+State 117:
+## Known stack suffix:
+## COLON
+## LR(1) items:
+estClass -> COLON . IDCLASS [ IS ]
+suiteMethode -> COLON . IDCLASS WALRUS expression [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On IDCLASS shift to state 118
+## Reductions:
+
+State 118:
+## Known stack suffix:
+## COLON IDCLASS
+## LR(1) items:
+estClass -> COLON IDCLASS . [ IS ]
+suiteMethode -> COLON IDCLASS . WALRUS expression [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On WALRUS shift to state 119
+## Reductions:
+-- On IS
+--   reduce production estClass -> COLON IDCLASS
+
+State 119:
+## Known stack suffix:
+## COLON IDCLASS WALRUS
+## LR(1) items:
+suiteMethode -> COLON IDCLASS WALRUS . expression [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On THIS shift to state 38
+-- On SUPER shift to state 39
+-- On RESULT shift to state 42
+-- On NEW shift to state 43
+-- On LPAREN shift to state 46
+-- On ID shift to state 48
+-- On CSTE shift to state 49
+-- On expression shift to state 120
+-- On acces shift to state 67
+## Reductions:
+
+State 120:
+## Known stack suffix:
+## COLON IDCLASS WALRUS expression
+## LR(1) items:
+expression -> expression . DOT ID [ TIMES STATIC RCURL PLUS MINUS ID DOT DIV DEF AUTO ]
+expression -> expression . DOT ID LPAREN largOpt RPAREN [ TIMES STATIC RCURL PLUS MINUS ID DOT DIV DEF AUTO ]
+expression -> expression . PLUS expression [ TIMES STATIC RCURL PLUS MINUS ID DOT DIV DEF AUTO ]
+expression -> expression . MINUS expression [ TIMES STATIC RCURL PLUS MINUS ID DOT DIV DEF AUTO ]
+expression -> expression . TIMES expression [ TIMES STATIC RCURL PLUS MINUS ID DOT DIV DEF AUTO ]
+expression -> expression . DIV expression [ TIMES STATIC RCURL PLUS MINUS ID DOT DIV DEF AUTO ]
+suiteMethode -> COLON IDCLASS WALRUS expression . [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On TIMES shift to state 51
+-- On PLUS shift to state 53
+-- On MINUS shift to state 55
+-- On DOT shift to state 57
+-- On DIV shift to state 65
+## Reductions:
+-- On STATIC RCURL ID DEF AUTO
+--   reduce production suiteMethode -> COLON IDCLASS WALRUS expression
+
+State 121:
+## Known stack suffix:
+## DEF option(OVERRIDE) option(STATIC) ID LPAREN lparamOpt RPAREN suiteMethode
+## LR(1) items:
+methode -> DEF option(OVERRIDE) option(STATIC) ID LPAREN lparamOpt RPAREN suiteMethode . [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+## Reductions:
+-- On STATIC RCURL ID DEF AUTO
+--   reduce production methode -> DEF option(OVERRIDE) option(STATIC) ID LPAREN lparamOpt RPAREN suiteMethode
+
+State 122:
+## Known stack suffix:
+## option(estClass)
+## LR(1) items:
+classOpt -> option(estClass) . [ IS ]
+## Transitions:
+## Reductions:
+-- On IS
+--   reduce production classOpt -> option(estClass)
+
+State 123:
+## Known stack suffix:
+## estClass
+## LR(1) items:
+option(estClass) -> estClass . [ IS ]
+## Transitions:
+## Reductions:
+-- On IS
+--   reduce production option(estClass) -> estClass
+
+State 124:
+## Known stack suffix:
+## classOpt
+## LR(1) items:
+suiteMethode -> classOpt . IS bloc [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On IS shift to state 125
+## Reductions:
+
+State 125:
+## Known stack suffix:
+## classOpt IS
+## LR(1) items:
+suiteMethode -> classOpt IS . bloc [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On LCURL shift to state 37
+-- On bloc shift to state 126
+## Reductions:
+
+State 126:
+## Known stack suffix:
+## classOpt IS bloc
+## LR(1) items:
+suiteMethode -> classOpt IS bloc . [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+## Reductions:
+-- On STATIC RCURL ID DEF AUTO
+--   reduce production suiteMethode -> classOpt IS bloc
+
+State 127:
+## Known stack suffix:
+## option(STATIC)
+## LR(1) items:
+champ -> option(STATIC) . option(AUTO) ID COLON IDCLASS SEMICOLON [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On AUTO shift to state 128
+-- On option(AUTO) shift to state 129
+## Reductions:
+-- On ID
+--   reduce production option(AUTO) ->
+
+State 128:
+## Known stack suffix:
+## AUTO
+## LR(1) items:
+option(AUTO) -> AUTO . [ ID ]
+## Transitions:
+## Reductions:
+-- On ID
+--   reduce production option(AUTO) -> AUTO
+
+State 129:
+## Known stack suffix:
+## option(STATIC) option(AUTO)
+## LR(1) items:
+champ -> option(STATIC) option(AUTO) . ID COLON IDCLASS SEMICOLON [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On ID shift to state 130
+## Reductions:
+
+State 130:
+## Known stack suffix:
+## option(STATIC) option(AUTO) ID
+## LR(1) items:
+champ -> option(STATIC) option(AUTO) ID . COLON IDCLASS SEMICOLON [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On COLON shift to state 131
+## Reductions:
+
+State 131:
+## Known stack suffix:
+## option(STATIC) option(AUTO) ID COLON
+## LR(1) items:
+champ -> option(STATIC) option(AUTO) ID COLON . IDCLASS SEMICOLON [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On IDCLASS shift to state 132
+## Reductions:
+
+State 132:
+## Known stack suffix:
+## option(STATIC) option(AUTO) ID COLON IDCLASS
+## LR(1) items:
+champ -> option(STATIC) option(AUTO) ID COLON IDCLASS . SEMICOLON [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On SEMICOLON shift to state 133
+## Reductions:
+
+State 133:
+## Known stack suffix:
+## option(STATIC) option(AUTO) ID COLON IDCLASS SEMICOLON
+## LR(1) items:
+champ -> option(STATIC) option(AUTO) ID COLON IDCLASS SEMICOLON . [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+## Reductions:
+-- On STATIC RCURL ID DEF AUTO
+--   reduce production champ -> option(STATIC) option(AUTO) ID COLON IDCLASS SEMICOLON
+
+State 134:
+## Known stack suffix:
+## methode
+## LR(1) items:
+construcOblCorpsOpt -> methode . construcOblCorpsOpt [ RCURL ]
+corps -> methode . [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On STATIC shift to state 22
+-- On DEF shift to state 23
+-- On option(STATIC) shift to state 127
+-- On methode shift to state 135
+-- On constructeur shift to state 136
+-- On construcOblCorpsOpt shift to state 144
+-- On champ shift to state 145
+## Reductions:
+-- On STATIC RCURL ID DEF AUTO
+--   reduce production corps -> methode
+-- On ID AUTO
+--   reduce production option(STATIC) ->
+** Conflict on STATIC ID DEF AUTO
+
+State 135:
+## Known stack suffix:
+## methode
+## LR(1) items:
+construcOblCorpsOpt -> methode . construcOblCorpsOpt [ RCURL ]
+## Transitions:
+-- On STATIC shift to state 22
+-- On DEF shift to state 23
+-- On option(STATIC) shift to state 127
+-- On methode shift to state 135
+-- On constructeur shift to state 136
+-- On construcOblCorpsOpt shift to state 144
+-- On champ shift to state 145
+## Reductions:
+-- On ID AUTO
+--   reduce production option(STATIC) ->
+
+State 136:
+## Known stack suffix:
+## constructeur
+## LR(1) items:
+construcOblCorpsOpt -> constructeur . lcorps [ RCURL ]
+## Transitions:
+-- On STATIC shift to state 22
+-- On DEF shift to state 137
+-- On option(STATIC) shift to state 127
+-- On methode shift to state 138
+-- On list(corps) shift to state 139
+-- On lcorps shift to state 140
+-- On corps shift to state 141
+-- On champ shift to state 143
+## Reductions:
+-- On RCURL
+--   reduce production list(corps) ->
+-- On ID AUTO
+--   reduce production option(STATIC) ->
+
+State 137:
+## Known stack suffix:
+## DEF
+## LR(1) items:
+methode -> DEF . option(OVERRIDE) option(STATIC) ID LPAREN lparamOpt RPAREN suiteMethode [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On OVERRIDE shift to state 24
+-- On option(OVERRIDE) shift to state 111
+## Reductions:
+-- On STATIC ID
+--   reduce production option(OVERRIDE) ->
+
+State 138:
+## Known stack suffix:
+## methode
+## LR(1) items:
+corps -> methode . [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+## Reductions:
+-- On STATIC RCURL ID DEF AUTO
+--   reduce production corps -> methode
+
+State 139:
+## Known stack suffix:
+## list(corps)
+## LR(1) items:
+lcorps -> list(corps) . [ RCURL ]
+## Transitions:
+## Reductions:
+-- On RCURL
+--   reduce production lcorps -> list(corps)
+
+State 140:
+## Known stack suffix:
+## constructeur lcorps
+## LR(1) items:
+construcOblCorpsOpt -> constructeur lcorps . [ RCURL ]
+## Transitions:
+## Reductions:
+-- On RCURL
+--   reduce production construcOblCorpsOpt -> constructeur lcorps
+
+State 141:
+## Known stack suffix:
+## corps
+## LR(1) items:
+list(corps) -> corps . list(corps) [ RCURL ]
+## Transitions:
+-- On STATIC shift to state 22
+-- On DEF shift to state 137
+-- On option(STATIC) shift to state 127
+-- On methode shift to state 138
+-- On list(corps) shift to state 142
+-- On corps shift to state 141
+-- On champ shift to state 143
+## Reductions:
+-- On RCURL
+--   reduce production list(corps) ->
+-- On ID AUTO
+--   reduce production option(STATIC) ->
+
+State 142:
+## Known stack suffix:
+## corps list(corps)
+## LR(1) items:
+list(corps) -> corps list(corps) . [ RCURL ]
+## Transitions:
+## Reductions:
+-- On RCURL
+--   reduce production list(corps) -> corps list(corps)
+
+State 143:
+## Known stack suffix:
+## champ
+## LR(1) items:
+corps -> champ . [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+## Reductions:
+-- On STATIC RCURL ID DEF AUTO
+--   reduce production corps -> champ
+
+State 144:
+## Known stack suffix:
+## methode construcOblCorpsOpt
+## LR(1) items:
+construcOblCorpsOpt -> methode construcOblCorpsOpt . [ RCURL ]
+## Transitions:
+## Reductions:
+-- On RCURL
+--   reduce production construcOblCorpsOpt -> methode construcOblCorpsOpt
+
+State 145:
+## Known stack suffix:
+## champ
+## LR(1) items:
+construcOblCorpsOpt -> champ . construcOblCorpsOpt [ RCURL ]
+## Transitions:
+-- On STATIC shift to state 22
+-- On DEF shift to state 23
+-- On option(STATIC) shift to state 127
+-- On methode shift to state 135
+-- On constructeur shift to state 136
+-- On construcOblCorpsOpt shift to state 146
+-- On champ shift to state 145
+## Reductions:
+-- On ID AUTO
+--   reduce production option(STATIC) ->
+
+State 146:
+## Known stack suffix:
+## champ construcOblCorpsOpt
+## LR(1) items:
+construcOblCorpsOpt -> champ construcOblCorpsOpt . [ RCURL ]
+## Transitions:
+## Reductions:
+-- On RCURL
+--   reduce production construcOblCorpsOpt -> champ construcOblCorpsOpt
+
+State 147:
+## Known stack suffix:
+## lcorps
+## LR(1) items:
+construcCorpsOpt -> lcorps . [ RCURL ]
+## Transitions:
+## Reductions:
+-- On RCURL
+--   reduce production construcCorpsOpt -> lcorps
+
+State 148:
+## Known stack suffix:
+## construcOblCorpsOpt
+## LR(1) items:
+construcCorpsOpt -> construcOblCorpsOpt . [ RCURL ]
+## Transitions:
+## Reductions:
+-- On RCURL
+--   reduce production construcCorpsOpt -> construcOblCorpsOpt
+
+State 149:
+## Known stack suffix:
+## CLASS IDCLASS LPAREN lparamOpt RPAREN heriteOpt IS LCURL construcCorpsOpt
+## LR(1) items:
+classe -> CLASS IDCLASS LPAREN lparamOpt RPAREN heriteOpt IS LCURL construcCorpsOpt . RCURL [ LCURL CLASS ]
+## Transitions:
+-- On RCURL shift to state 150
+## Reductions:
+
+State 150:
+## Known stack suffix:
+## CLASS IDCLASS LPAREN lparamOpt RPAREN heriteOpt IS LCURL construcCorpsOpt RCURL
+## LR(1) items:
+classe -> CLASS IDCLASS LPAREN lparamOpt RPAREN heriteOpt IS LCURL construcCorpsOpt RCURL . [ LCURL CLASS ]
+## Transitions:
+## Reductions:
+-- On LCURL CLASS
+--   reduce production classe -> CLASS IDCLASS LPAREN lparamOpt RPAREN heriteOpt IS LCURL construcCorpsOpt RCURL
+
+State 151:
+## Known stack suffix:
+## champ
+## LR(1) items:
+construcOblCorpsOpt -> champ . construcOblCorpsOpt [ RCURL ]
+corps -> champ . [ STATIC RCURL ID DEF AUTO ]
+## Transitions:
+-- On STATIC shift to state 22
+-- On DEF shift to state 23
+-- On option(STATIC) shift to state 127
+-- On methode shift to state 135
+-- On constructeur shift to state 136
+-- On construcOblCorpsOpt shift to state 146
+-- On champ shift to state 145
+## Reductions:
+-- On STATIC RCURL ID DEF AUTO
+--   reduce production corps -> champ
+-- On ID AUTO
+--   reduce production option(STATIC) ->
+** Conflict on STATIC ID DEF AUTO
+
+State 152:
+## Known stack suffix:
+## extClasse
+## LR(1) items:
+option(extClasse) -> extClasse . [ IS ]
+## Transitions:
+## Reductions:
+-- On IS
+--   reduce production option(extClasse) -> extClasse
+
+State 153:
+## Known stack suffix:
+## prog
+## LR(1) items:
+prog' -> prog . [ # ]
+## Transitions:
+## Reductions:
+-- On #
+--   accept prog
+
+State 154:
+## Known stack suffix:
+## list(classe)
+## LR(1) items:
+prog -> list(classe) . bloc EOF [ # ]
+## Transitions:
+-- On LCURL shift to state 37
+-- On bloc shift to state 155
+## Reductions:
+
+State 155:
+## Known stack suffix:
+## list(classe) bloc
+## LR(1) items:
+prog -> list(classe) bloc . EOF [ # ]
+## Transitions:
+-- On EOF shift to state 156
+## Reductions:
+
+State 156:
+## Known stack suffix:
+## list(classe) bloc EOF
+## LR(1) items:
+prog -> list(classe) bloc EOF . [ # ]
+## Transitions:
+## Reductions:
+-- On #
+--   reduce production prog -> list(classe) bloc EOF
+
+State 157:
+## Known stack suffix:
+## classe
+## LR(1) items:
+list(classe) -> classe . list(classe) [ LCURL ]
+## Transitions:
+-- On CLASS shift to state 1
+-- On list(classe) shift to state 158
+-- On classe shift to state 157
+## Reductions:
+-- On LCURL
+--   reduce production list(classe) ->
+
+State 158:
+## Known stack suffix:
+## classe list(classe)
+## LR(1) items:
+list(classe) -> classe list(classe) . [ LCURL ]
+## Transitions:
+## Reductions:
+-- On LCURL
+--   reduce production list(classe) -> classe list(classe)
+
