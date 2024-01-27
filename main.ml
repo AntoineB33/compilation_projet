@@ -1,5 +1,6 @@
 open Ast
 open Lexing
+open Print
 
 let parse_with_error lexbuf file_in chan =
   let print_position outx lexbuf =
@@ -8,9 +9,10 @@ let parse_with_error lexbuf file_in chan =
       pos.pos_lnum (pos.pos_cnum - pos.pos_bol + 1)
   in
   try
-   let _ = TpParse.prog TpLex.token lexbuf in
-   let _ = Verif.runVC () in
-   let _ = Code.genCode () chan in
+   let ast = TpParse.prog TpLex.token lexbuf in
+   print_all ast;
+   let _ = Verif.runVC ast in
+   let _ = Code.genCode ast chan in
    print_endline "\nCompilation Done !"
   with
     Decl_error msg ->

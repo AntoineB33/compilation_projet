@@ -16,12 +16,14 @@ class Point(xc, yc: Integer) is {
     this.hasClone := 0;
   }
 
-  def static initPoint() is { next := 1; }
+/* V2: l'accès à un champ static se fait toujours via le nom de la classe ! */
+  def static initPoint() is { Point.next := 1; }
 
-  def static get() : Integer := index
+  /* V2 : Point.next et non pas: index (attribut d'instance) ou next  */
+  def static get() : Integer := Point.next 
   
   def static incr() : Integer is {
-    this.next := this.next + 1; result := this.next;
+    Point.next := Point.next + 1; result := Point.next; /* V2 */
   }
 
   def setName(newName: String) is { this.name := newName; }
@@ -124,7 +126,7 @@ class PointColore(xc, yc:Integer, c: Couleur) extends Point is {
    * l'en-tete de la classe. On impose d'avoir les memes noms de variables
    * dans le meme ordre
    */
-  def PointColore(xc: Integer, yc:Integer, c: Couleur) : Point(xc,yc) is 
+  def PointColore(xc: Integer, yc:Integer, c: Couleur) : Point(xc, yc) is 
   { this.couleur := c; this.setName("PC_" & this.index.toString());
   }
 

@@ -1,6 +1,6 @@
 INTERFACES = tpParse.mli
-SOURCES    = ast.ml tpParse.ml tpLex.ml verif.ml code.ml main.ml
-GENERATED  = tpLex.ml tpLex.mli ast.mli tpParse.ml tpParse.mli tpParse.automaton tpParse.conflicts code.mli verif.mli main.mli
+SOURCES    = ast.ml tpParse.ml print.ml tpLex.ml verif.ml code.ml main.ml
+GENERATED  = tpLex.ml tpLex.mli ast.mli tpParse.ml tpParse.mli tpParse.automaton tpParse.conflicts code.mli verif.mli main.mli print.mli
 
 tp: ast.mli tpParse.mli $(SOURCES)
 	ocamlc -g -o tp $(INTERFACES)
@@ -26,6 +26,9 @@ verif.mli: ast.mli verif.ml
 
 tpParse.mli : ast.mli tpParse.mly 
 	menhir --dump --explain --infer  tpParse.mly
+
+print.mli : print.ml
+	ocamlc -c -g print.ml
 
 clean:
 	rm -rf  tp out.txt  *.o *.cmi *.cmo *.cmx *~ $(GENERATED)

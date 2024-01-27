@@ -1,0 +1,16 @@
+class Bizarre() is {
+
+  /* ces trois attributs sont statiques, l'effet du static allant jusqu'au ':' qui précède Integer.
+   * Par contre, seuls les deux premiers ont une methode d'acces engendrée automatiquement
+   * Le champ x1 n'est par contre pas concerné par le static.
+   */
+  static auto x, auto y, z: Integer; auto x1:  Integer;
+  def Bizarre() is { this.x1 = 55; }
+  def static init() is { Bizarre.x := 12; Bizarre.y := 25; Bizarre.z := 27; }
+  def static test(b : Bizarre) : Integer
+         := Bizarre.x + Bizarre.y + Bizarre.z + b.x1()
+}
+{
+  Bizarre.init();
+  Bizarre.test(new Bizarre()).toString().println();
+}

@@ -2,149 +2,159 @@
 open Ast
 %}
 
-%token <string> ID 
-%token <string> IDCLASS
+(*=============== DECLARATION TOKEN ===================*)
+
+%token <string> ID IDCLASS CSTES
 %token <int> CSTE
-%token <Ast.opComp> RELOP
-%token PLUS MINUS TIMES DIV
-%token CONCAT
+%token TIMES DIV PLUS MINUS
 %token LPAREN RPAREN SEMICOLON
-%token ASSIGN
-%token IF THEN ELSE BEGIN END
-
-%token EOF
-
+%token IF THEN ELSE
 %token RETURN
+%token EOF
 %token DEF
 %token CLASS
 %token IS
 %token EXTENDS
-%token LCURL RCURL COMMA COLON (* RCURL : {   LCURL : } *)
+%token LCURL RCURL COMMA COLON
 %token AUTO STATIC
-%token WALRUS (*  :=  (morse) *)
+%token WALRUS
 %token OVERRIDE
-
 %token THIS SUPER RESULT
 %token DOT
 %token NEW
+%token <Ast.opComp> RELOP
+%token AMPERSAND
+
+(*=============== PRIORITE TOKEN ===================*)
+
+%left IDCLASS
+%left AMPERSAND
+%nonassoc RELOP
+%left PLUS MINUS
+%left TIMES DIV
+%left DOT
+
 
 (*=============== START GRAMMAIRE ===================*)
 
 %start <Ast.progType> prog
 %%
-prog: list(classe) bloc EOF { }
+prog: lO = list(classe) b = bloc EOF { lO,b }
 
 
 (*================ CLASS ==================*)
 
 
-classe :
-    | CLASS nomClasse = IDCLASS LPAREN lparamOpt RPAREN heriteOpt IS LCURL construcCorpsOpt RCURL { }
+classe : 
+    | CLASS n = IDCLASS LPAREN lO = lparamOpt RPAREN h = heriteOpt IS LCURL c = corpsClasse RCURL { 
+let (lc, lm) = c in(n, lO, h, lc, lm)}
 
 lparamOpt:
-    | separated_list(COMMA, param) { }
+    | li = separated_list(COMMA, param) { li }
 
 param :
-    | separated_nonempty_list(COMMA, ID) COLON IDCLASS { }
+    | li = separated_nonempty_list(COMMA, ID) COLON n = IDCLASS { (li,n) }
 
 (* class mere *)
-heriteOpt :
-    |nomClasseParent = option(extClasse) { }
+heriteOpt : 
+    | o1 = option(extClasse) { o1 }
 
-extClasse : EXTENDS IDCLASS { }
+extClasse : EXTENDS n = IDCLASS { n }
 
-construcCorpsOpt :
-    | construcOblCorpsOpt { }
-    | lcorps { }
+corpsClasse :
+    | lO = lchamp lI = lmeth { lO, lI }
 
-(* corp de la class *)
-construcOblCorpsOpt :
-    | champ construcOblCorpsOpt { }
-    | methode construcOblCorpsOpt { }
-    | constructeur lcorps { }
+lmeth : lO = list(methode) { lO }
 
-lcorps : list(corps) { }
-
-corps : 
-    | methode { } 
-    | champ { }
-
-(*=============== DECLARATION CONSTRUCTEUR ===================*)
-
-constructeur : 
-    | DEF nomClasse = IDCLASS LPAREN lparamOpt RPAREN superOpt IS bloc { }
-
-superOpt :
-    | option(super) { }
-
-super : COLON nomClasse = IDCLASS LPAREN lparamOpt RPAREN { }
+lchamp : lO = list(champ) { lO }
 
 (*=============== DECLARATION CHAMP ===================*)
 
-champ : option(STATIC) option(AUTO) nom = ID COLON nomClasse = IDCLASS SEMICOLON { }
+champ : o1 = boption(STATIC) lO = separated_nonempty_list(COMMA,ident) COLON n = IDCLASS SEMICOLON { o1,lO,n  }
 
+ident : o1 = boption(AUTO) n = ID { o1,n }
 
 (*================= DECLARATION METHODE =================*)
 
 
-methode : DEF option(OVERRIDE) option(STATIC) nom = ID LPAREN lparamOpt RPAREN suiteMethode { }
+methode : 
+      DEF o1 = boption(OVERRIDE) o2 = boption(STATIC) n = ID LPAREN lO = lparamOpt RPAREN suite = suiteMethode { 
+let ( optN, instr) = suite in ( o1, o2, n,lO ,optN, None, instr)}
+(*{doesOverride = o1; isStatic = o2; nom = n; lparamOpt = lO; nomClass = s; bloc = [],[]}*)
+   
+     | DEF n = IDCLASS LPAREN lO = lparamOpt RPAREN su = option(super) IS b = bloc { 
+(*
+let (supN, supL) = (Some su) in(None, None, n, lO, (supN, supL), B(b) )
 
-suiteMethode : 
-    | COLON nomClasse = IDCLASS WALRUS expression { }
-    | classOpt IS bloc { }
+let (supN, supL) = su in(None, None, n, lO, supN, supL, B(b) )
+*)
+      (false, false, n, lO, None, su, b)
+}
 
-classOpt :
-    | option(estClass) { }
 
-estClass : COLON nomClasse = IDCLASS { }
+
+
+super : COLON n = IDCLASS LPAREN lO = largOpt RPAREN { CallSuper(n, lO) }
+
+
+suiteMethode :
+    | COLON n = IDCLASS WALRUS e = expression { (Some n), Epr(e) }
+    | c = option(estClass) IS b = bloc { c, b }
+
+estClass : COLON n = IDCLASS {n}
+
+
 
 (*================ DECLARATION EXPRESSION ==================*)
 
 acces :
-    | THIS { }
-    | SUPER { }
-    | RESULT { }
+    | THIS { This }
+    | SUPER { Super }
+    | RESULT { Result }
 
 largOpt :
-    | separated_list(COMMA, expression) { }
+    | s = separated_list(COMMA, expression) { s }
 
 expression : 
-    | nom = ID { }
-    | x = CSTE { }
-    | LPAREN expression RPAREN { }
-    | LPAREN nomClasse = IDCLASS expression RPAREN { }
-    | expression DOT nomChamp = ID  { }  
-    | acces { }
-    | NEW nomClasse = IDCLASS del = delimited(LPAREN, largOpt, RPAREN) { }
-    | expression DOT nomMethode = ID LPAREN largOpt RPAREN { }
-    | g = expression PLUS d = expression { }
-    | g = expression MINUS d = expression { }   
-    | g = expression TIMES d = expression { }
-    | g = expression DIV d = expression { } 
-        (*manque des operateurs*)
+    | nom = ID { Id(nom) }
+    | nom = IDCLASS { IdClass(nom)}
+    | x = CSTE { Cste(x) }
+    | x = CSTES { Cstes(x) } 
+    | LPAREN e = expression RPAREN { e }
+    | LPAREN nomClasse = IDCLASS e = expression RPAREN { ExpClass(nomClasse, [e]) } (*cast*)
+    | e = expression DOT nomChamp = ID  { ExpString(e, nomChamp) }  
+    | a = acces { a }
+    | NEW nomClasse = IDCLASS del = delimited(LPAREN, largOpt, RPAREN) { ExpClass(nomClasse, del) }
+    | e = expression DOT nomMethode = ID LPAREN lO = largOpt RPAREN { ExpMethode(e, nomMethode, lO) }
+    | g = expression PLUS d = expression { Plus(g,d) }
+    | g = expression MINUS d = expression { Minus(g,d) }
+    | g = expression TIMES d = expression { Times(g,d) }
+    | g = expression DIV d = expression { Div(g,d) }
+    | e1 = expression RELOP e2 = expression { Relop(e1 ,e2) }
+    | e1 = expression AMPERSAND e2 = expression { Ampersand(e1 ,e2)}
+(* conflit avec operateur unaires *)
+    | MINUS e = expression { Minus(Cste(0), e) }
+    | PLUS e = expression { e }
+
 
 
 (*================= DECLARATION INSTRUCTION =================*)
 
 instruction : 
-    | expression SEMICOLON { }
-    | bloc { }
-    | RETURN SEMICOLON { }
-    | nomVar = ID WALRUS expression SEMICOLON { }
-    | IF expression THEN t = instruction ELSE e = instruction { }
+    | e = expression SEMICOLON { Epr(e) }
+    | b = bloc { b }
+    | RETURN SEMICOLON { ReturnSemi }
+    | nomVar = expression WALRUS e = expression SEMICOLON { Assign(nomVar, e) }
+    | IF i = expression THEN t = instruction ELSE e = instruction { ITE(i,t,e) }
 
 (*============= DECLARATION BLOC =====================*)
 
 bloc :
-    | LCURL blocInner RCURL { }
-    | LCURL bloc RCURL { }
-
-blocInner : 
-    | list(instruction) { }
-    | nonempty_list(declaVar) IS nonempty_list(instruction) { }
+    | LCURL  li = list(instruction) RCURL { Bloc([],li) }
+    | LCURL li1 = nonempty_list(declaVar) IS li2 = nonempty_list(instruction) RCURL { Bloc(li1,li2) }
 
 declaVar :
-    | lnom = separated_list(COMMA, ID) COLON nomClasse = IDCLASS SEMICOLON { }
+    | l = separated_list(COMMA, ID) COLON n = IDCLASS SEMICOLON { (l,n) }
 
 
 
