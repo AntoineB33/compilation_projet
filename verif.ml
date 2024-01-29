@@ -37,11 +37,36 @@ type classData = {
   parent : idClass option;
 }
 
-
-(*pb a cause de IdClassMap*)
-
 type env = classData IdClassMap.t
 
+(*environement par defaut*)
+let init_env () = 
+    let e = IdClassMap.empty in
+
+    (*declarer par defaut Integer avec la methode toSrting() *)
+    let toString : methodeData = {name= "toString"; param= []; returnType= STR; static= false} in
+    let integerMethodes = IdMap.empty in
+    let integer : classData = {
+        champ= [];
+        methode= (IdMap.add "toString" toString integerMethodes);
+        construct= None; (* pas besoin car on ne peut appeler Integer *)
+        parent= None
+    } in
+
+    (*declarer par defaut String avec les methodes print() println() *)
+    let print : methodeData = {name= "print"; param= []; returnType= VOID; static= false} in
+    let println : methodeData = {name= "println"; param= []; returnType= VOID; static= false} in
+    let strMethodes = IdMap.empty in
+    let str : classData = {
+        champ= [];
+        methode= (IdMap.add "print" print (IdMap.add "println" println strMethodes));
+        construct= None; (* pas besoin car on ne peut appeler String *)
+        parent= None
+    } in
+
+    IdClassMap.add "Integer" integer (IdClassMap.add "String" str e)
+
+(*=======================================================================*)
 
 let add_methode (e :env) (idClassNow : idClass) (cl : classData) (listmd : methodeData list) : env =
   (*fonction pour ajouter les nouvelles methodes*)
@@ -53,20 +78,33 @@ let add_methode (e :env) (idClassNow : idClass) (cl : classData) (listmd : metho
   in
   (*nouvelle map de methode*)
   let mapMethode = add_list_map cl.methode listmd in
-
-
   (*classe avec les nouvelles méthodes*)
   let newcl : classData = {cl with methode = mapMethode } in
-
   (*mise à jour environement*)
   let newC e key newElement = 
     IdClassMap.add key newElement (IdClassMap.remove key e)
   in
   newC e idClassNow newcl
 
+let create_construct (e : env) (idClassNow : idClass) (idConstruct : id) : env =
+  let add_const (cd : classData) (idConstruct : id) : env =
+    (* création du constructeur *)
+    let constructData : methodeData = {name = idConstruct; param = cd.champ; returnType = CLASS(idClassNow); static = false} in
+    (* création de la classe mise à jour *)
+    let newClassData = {cd with construct = Some constructData} in
+    (* ajout de la classData à l env *)
+    IdClassMap.add idClassNow newClassData (IdClassMap.remove idClassNow e)
+  in
+  match IdClassMap.find_opt idClassNow e with
+  | None -> e
+  | Some cd ->
+    match cd.construct with
+    | None -> add_const cd idConstruct (* n'existe pas, donc : créer constructeur *)
+    | Some c -> e   
 
+(*=======================================================================*)
 
-(* Pour cast *)
+(* arg1 isChildOf arg2 in arg3[environment] *)
 let rec is_child_of (idClassChild : idClass) (idClassParent : idClass) (e : env)  : bool =
   match IdClassMap.find_opt idClassChild e with
     | None -> false
@@ -78,7 +116,7 @@ let rec is_child_of (idClassChild : idClass) (idClassParent : idClass) (e : env)
             else is_child_of p idClassParent e
 
 
-
+(*verif si la method est dans la classe et si ses params sont correct*)
 let is_methode (methode : methodeData) (idMethode : id)  (lparam : champData list) (typeRetour : valueType ) : bool =
   (*verification du nom du param*)  
   let verif_name_param (p1 : string) (p2 : string) : bool =
@@ -121,7 +159,7 @@ let is_methode (methode : methodeData) (idMethode : id)  (lparam : champData lis
     
     
 
-(*parent uniquement*)        
+(* isMethode dans les supers classes de arg2 *)        
 let rec is_methode_of_parent (e : env) (idClassNow : idClass) (idMethode : id) (lparam : champData list) (typeRetour : valueType ) : bool =
   (* Recherche dans le parent suivant *)
   let rec search_in  (e : env) (idClassOPT : idClass option) (idMethode : id) (lparam : champData list) (typeRetour : valueType ) : bool =
@@ -151,6 +189,7 @@ let rec is_methode_of_parent (e : env) (idClassNow : idClass) (idMethode : id) (
                       then true  (* méthode trouvée*)
                       else (*on cherche dans le prochain parent*)
                       search_in e dp.parent idMethode lparam typeRetour
+
 
      
 (*classe uniquement sans parent*)
@@ -192,23 +231,27 @@ let has_constructor (e: env) (idClassNow : idClass) : bool =
       | Some mapConst -> true
 
 
+let extend_is_looping (e: env) (idClass : idClass) : bool =
+    match IdClassMap.find_opt idClass e with
+        | None -> false
+        | Some classe -> is_child_of idClass idClass e
 
-let create_construct (e : env) (idClassNow : idClass) (idConstruct : id) : env =
-  let add_const (cd : classData) (idConstruct : id) : env =
-    (* création du constructeur *)
-    let constructData : methodeData = {name = idConstruct; param = cd.champ; returnType = CLASS(idClassNow); static = false} in
-    (* création de la classe mise à jour *)
-    let newClassData = {cd with construct = Some constructData} in
-    (* ajout de la classData à l env *)
-    IdClassMap.add idClassNow newClassData (IdClassMap.remove idClassNow e)
-  in
+let extend_exist (e: env) (idExtend : idClass) : bool = 
+    match IdClassMap.find_opt idExtend e with
+        | None -> false
+        | Some classe -> true 
 
-  match IdClassMap.find_opt idClassNow e with
-  | None -> e
-  | Some cd ->
-    match cd.construct with
-    | None -> add_const cd idConstruct (* n'existe pas, donc : créer constructeur *)
-    | Some c -> e
+let extend_is_correct (e: env) (idClass : idClass) (idExtend : idClass) : bool =
+    (*empeche l'heritage de integer et string*)
+    if ( idExtend = "Integer" || idExtend = "String" )
+    then false
+    else
+    match IdClassMap.find_opt idClass e with
+        | None -> false
+        | Some classe -> not (extend_is_looping e idClass) && (extend_exist e idExtend)
+
+
+(*=======================================================================*)
 
 
 let runVC ast =
@@ -253,13 +296,17 @@ let runVC ast =
           (match lmeth0 with
             ((o1, o2, n,lO ,optN, su, b)::rest) ->
               let lO = getParam [] lO in
-              let env = IdMap.add n {name = n; param = lO; returnType = CLASS optN; static = o2} env
+              let optNC = (match optN with
+                None -> VOID
+                | Some n -> CLASS n
+              ) in
+              let env = IdMap.add n {name = n; param = lO; returnType = optNC; static = o2} env
               in getMeth env rest
             | [] -> env
           )
         in
-        (* let methode0 : methodeData IdMap.t = getMeth IdMap.empty lmeth *)
-        let methode0 = IdMap.empty
+        let methode0 : methodeData IdMap.t = getMeth IdMap.empty lmeth
+        (* let methode0 = IdMap.empty *)
         in
         let class_decl : classData = {
           champ = champ0;
