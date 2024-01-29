@@ -3,7 +3,7 @@ open Ast
 type id = string
 type idClass = string
 
-type valueType = INT of int | STR of string | CLASS of idClass
+type valueType = VOID | INT | STR | CLASS of idClass
 
 module IdMap = Map.Make(struct
   type t = id
@@ -43,7 +43,26 @@ type classData = {
 type env = classData IdClassMap.t
 
 
+let add_methode (e :env) (idClassNow : idClass) (cl : classData) (listmd : methodeData list) : env =
+  (*fonction pour ajouter les nouvelles methodes*)
+  let add_list_map map list =
+    List.fold_left(
+      fun acc element ->
+        IdMap.add element.name element acc
+      )map list
+  in
+  (*nouvelle map de methode*)
+  let mapMethode = add_list_map cl.methode listmd in
 
+
+  (*classe avec les nouvelles méthodes*)
+  let newcl : classData = {cl with methode = mapMethode } in
+
+  (*mise à jour environement*)
+  let newC e key newElement = 
+    IdClassMap.add key newElement (IdClassMap.remove key e)
+  in
+  newC e idClassNow newcl
 
 
 
@@ -68,8 +87,8 @@ let is_methode (methode : methodeData) (idMethode : id)  (lparam : champData lis
   (*verification du type du param*)
   let verif_type_param (p1 : valueType) (p2 : valueType) : bool =
           match (p1,p2) with
-              | (INT i1, INT i2)  -> i1 = i2
-              | (STR i1, STR i2)  -> i1 = i2
+              | (INT, INT)  -> true
+              | (STR, STR)  -> true
               | (CLASS i1,CLASS i2) -> i1 = i2
               | _ -> false
   in
@@ -84,7 +103,7 @@ let is_methode (methode : methodeData) (idMethode : id)  (lparam : champData lis
     then match (lp1,lp2) with
         | ([],[]) -> true
         | (p1::tp1,p2::tp2)->
-            if (verif_name_param p1.name p2.name)
+            if (verif_param p1 p2)
             then  (verif_lParam tp1 tp2)
             else false
         | _ -> false
@@ -104,34 +123,34 @@ let is_methode (methode : methodeData) (idMethode : id)  (lparam : champData lis
 
 (*parent uniquement*)        
 let rec is_methode_of_parent (e : env) (idClassNow : idClass) (idMethode : id) (lparam : champData list) (typeRetour : valueType ) : bool =
-    (* Recherche dans le parent suivant *)
-    let rec search_in  (e : env) (idClassOPT : idClass option) (idMethode : id) (lparam : champData list) (typeRetour : valueType ) : bool =
-        match idClassOPT with
-        | None -> false
-        | Some i -> is_methode_of_parent e i idMethode lparam typeRetour
+  (* Recherche dans le parent suivant *)
+  let rec search_in  (e : env) (idClassOPT : idClass option) (idMethode : id) (lparam : champData list) (typeRetour : valueType ) : bool =
+      match idClassOPT with
+      | None -> false
+      | Some i -> is_methode_of_parent e i idMethode lparam typeRetour
+  in
+  
+  (* Récupération des informations de la classe *)
+  let give_ClassData  (e : env) (idClassOPT : idClass option): classData option =
+      match idClassOPT with
+      | None -> None (*pas de recherche possible*)
+      | Some i -> IdClassMap.find_opt i e (*recherche dans la base*)
     in
-    
-    (* Récupération des informations de la classe *)
-    let give_ClassData  (e : env) (idClassOPT : idClass option): classData option =
-        match idClassOPT with
-        | None -> None (*pas de recherche possible*)
-        | Some i -> IdClassMap.find_opt i e (*recherche dans la base*)
-     in
 
-    (* chercher la class dans map*)
-    match IdClassMap.find_opt idClassNow e with
-    | None   -> false     (*la classe n'existe pas*)
-    | Some dn ->
-        match give_ClassData e dn.parent with
-        | None -> false (*pas de parent ou pas trouvé dans la base*)
-        | Some dp -> (*parent trouvé, recherche de la methode dans le parent*)
-                match IdMap.find_opt idMethode dp.methode with
-                | None -> (*on cherche dans le prochain parent*)
-                    search_in e dp.parent idMethode lparam typeRetour
-                | Some m -> if is_methode m idMethode lparam typeRetour
-                        then true  (* méthode trouvée*)
-                        else (*on cherche dans le prochain parent*)
-                        search_in e dp.parent idMethode lparam typeRetour
+  (* chercher la class dans map*)
+  match IdClassMap.find_opt idClassNow e with
+  | None   -> false     (*la classe n'existe pas*)
+  | Some dn ->
+      match give_ClassData e dn.parent with
+      | None -> false (*pas de parent ou pas trouvé dans la base*)
+      | Some dp -> (*parent trouvé, recherche de la methode dans le parent*)
+              match IdMap.find_opt idMethode dp.methode with
+              | None -> (*on cherche dans le prochain parent*)
+                  search_in e dp.parent idMethode lparam typeRetour
+              | Some m -> if is_methode m idMethode lparam typeRetour
+                      then true  (* méthode trouvée*)
+                      else (*on cherche dans le prochain parent*)
+                      search_in e dp.parent idMethode lparam typeRetour
 
      
 (*classe uniquement sans parent*)
@@ -172,7 +191,26 @@ let has_constructor (e: env) (idClassNow : idClass) : bool =
       | None -> false (* creer un constructeur*)
       | Some mapConst -> true
 
-      
+
+
+let create_construct (e : env) (idClassNow : idClass) (idConstruct : id) : env =
+  let add_const (cd : classData) (idConstruct : id) : env =
+    (* création du constructeur *)
+    let constructData : methodeData = {name = idConstruct; param = cd.champ; returnType = CLASS(idClassNow); static = false} in
+    (* création de la classe mise à jour *)
+    let newClassData = {cd with construct = Some constructData} in
+    (* ajout de la classData à l env *)
+    IdClassMap.add idClassNow newClassData (IdClassMap.remove idClassNow e)
+  in
+
+  match IdClassMap.find_opt idClassNow e with
+  | None -> e
+  | Some cd ->
+    match cd.construct with
+    | None -> add_const cd idConstruct (* n'existe pas, donc : créer constructeur *)
+    | Some c -> e
+
+
 let runVC2 ast =
   (match ast with
     |(class_decl::rest, instruc) -> 
@@ -187,9 +225,92 @@ let runVC2 ast =
         | _ -> raise (VC_error "Method declarations in class are not valid."))
     | _ -> raise (VC_error "Method declarations in class are not valid."))
 
+
 let runVC ast =
+
+  let class_decl_is_correct env class_decl =
+    (match class_decl with
+      (class_name, params, parent, lchamp, lmeth) ->
+        let rec getIdent env l0 vlt =
+          (match l0 with
+            ((o1,n)::rest) ->
+              let env = env @ [{name = n; value = CLASS vlt}]
+              in getIdent env rest vlt
+            | [] -> env)
+        in
+        let rec getChamps env lchamp0 = 
+          (match lchamp0 with
+            ((o1, l0, n)::rest) -> 
+              let env = getIdent env l0 n
+              in getChamps env rest
+            | [] -> env
+          )
+        in
+        let champ0 : champData list = getChamps [] lchamp
+        in
+        let getSubParam env lO =
+          (match lO with
+            (li::rest, n) -> 
+              let env = env @ [{name = n; value = CLASS n}]
+              in getParam env (rest, n)
+            |([], n) -> env
+            | [] -> env
+          )
+        in
+        let getParam env lO =
+          (match lO with
+            li::rest ->
+              let env = getSubParam env (rest, n)
+              in getParam env rest
+            | [] -> env
+          )
+        in
+        let rec getMeth env lmeth0 = 
+          (match lmeth0 with
+            ((o1, o2, n,lO ,optN, su, b)::rest) ->
+              let lO = getParam [] lO
+              let env = IdMap.add n {name = n; param = lO; returnType = CLASS optN; static = o2} env
+              in getMeth env rest
+            | [] -> env
+          )
+        in
+        let methode0 : methodeData IdMap.t = getMeth IdMap.empty lmeth
+        in
+        let class_decl : classData = {
+          champ = champ0;
+          methode = methode0;
+          construct = None;
+          parent = parent;
+        } in
+        let env = IdClassMap.add class_name class_decl env in
+        (* Check the validity of method declarations *)
+        let check_methods_validity e class_decl =
+          let check_method_validity_wrapper idMethode methode_data =
+            true
+            (* let lparam = methode_data.param in
+            let typeRetour = methode_data.returnType in
+            if check_method_validity e class_name idMethode lparam typeRetour then
+              true
+            else
+              raise (VC_error ("Method '" ^ idMethode ^ "' in class '" ^ class_name ^ "' is not valid.")) *)
+          in
+          IdMap.for_all check_method_validity_wrapper class_decl.methode
+        in
+  
+        if check_methods_validity env class_decl then
+          env
+        else
+          raise (VC_error "Method declarations in class are not valid.")
+      | _ -> env
+      )
+  
+  in
+
+  let instruc_is_correct env instruc = env
+
+  in
+
   let rec runVCRec env ast =
-    (* Helper function to check if a given method is valid in the current class or its parents *)
     let rec check_method_validity e idClassNow idMethode lparam typeRetour =
       if is_methode_of e idClassNow idMethode lparam typeRetour then
         true
@@ -199,53 +320,12 @@ let runVC ast =
         false
     in
 
-    (match ast with
-      (class_decl::rest, instruc) ->
-        (match class_decl with
-          (class_name, params, parent, lchamp, lmeth) ->
-            let rec getIdent env l0 vlt =
-              (match l0 with
-                ((o1,n)::rest) ->
-                  let env = env @ [(n, vlt)]
-                  in getIdent env rest vlt
-                | [] -> env)
-            in
-            let rec getChamps env lchamp0 = 
-              (match lchamp0 with
-                ((o1, l0, n)::rest) -> 
-                  let env = getIdent env l0 n
-                  in getChamps env lchamp0
-                | [] -> env
-              )
-            in
-            let champ0 = getChamps [] lchamp
-            in
-            let class_decl : classData = {
-              champ = champ0;
-              methode = IdMap.empty;
-              construct = None;
-              parent = parent;
-            } in
-            let env = IdClassMap.add class_name class_decl env in
-            (* Check the validity of method declarations *)
-            let check_methods_validity e class_decl =
-              let check_method_validity_wrapper idMethode methode_data =
-                true
-                (* let lparam = methode_data.param in
-                let typeRetour = methode_data.returnType in
-                if check_method_validity e class_name idMethode lparam typeRetour then
-                  true
-                else
-                  raise (VC_error ("Method '" ^ idMethode ^ "' in class '" ^ class_name ^ "' is not valid.")) *)
-              in
-              IdMap.for_all check_method_validity_wrapper class_decl.methode
-            in
 
-            if check_methods_validity env class_decl then
-              runVCRec env (rest, instruc)
-            else
-              raise (VC_error "Method declarations in class are not valid.")
-          | _ -> Printf.printf "Handling other cases\n")
-      | _ -> Printf.printf "Handling other cases\n")
+    (match ast with
+      (class_decl::rest, instruc) -> 
+        let env = class_decl_is_correct env class_decl
+        in runVCRec env (rest,instruc)
+      | ([],instruc) -> instruc_is_correct env ([],instruc)
+      | _ -> env)
   in
   runVCRec IdClassMap.empty ast
