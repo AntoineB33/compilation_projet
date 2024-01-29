@@ -211,21 +211,6 @@ let create_construct (e : env) (idClassNow : idClass) (idConstruct : id) : env =
     | Some c -> e
 
 
-let runVC2 ast =
-  (match ast with
-    |(class_decl::rest, instruc) -> 
-        (match class_decl with
-        |(class_name, params, parent, lchamp, lmeth) ->
-            let rec getChamps lchamp0 = 
-              (match lchamp0 with
-                  (o1, l0, n) -> raise (VC_error "Method declarations in class are not valid."))
-            in
-            let champ0 = getChamps lchamp in
-            raise (VC_error "Method declarations in class are not valid.")
-        | _ -> raise (VC_error "Method declarations in class are not valid."))
-    | _ -> raise (VC_error "Method declarations in class are not valid."))
-
-
 let runVC ast =
 
   let class_decl_is_correct env class_decl =
@@ -248,19 +233,18 @@ let runVC ast =
         in
         let champ0 : champData list = getChamps [] lchamp
         in
-        let getSubParam env lO =
+        let rec getSubParam env lO =
           (match lO with
-            (li::rest, n) -> 
-              let env = env @ [{name = n; value = CLASS n}]
-              in getParam env (rest, n)
+            (par::rest, n) -> 
+              let env = env @ [{name = par; value = CLASS n}]
+              in getSubParam env (rest, n)
             |([], n) -> env
-            | [] -> env
           )
         in
-        let getParam env lO =
+        let rec getParam env lO =
           (match lO with
             li::rest ->
-              let env = getSubParam env (rest, n)
+              let env = getSubParam env li
               in getParam env rest
             | [] -> env
           )
@@ -268,13 +252,14 @@ let runVC ast =
         let rec getMeth env lmeth0 = 
           (match lmeth0 with
             ((o1, o2, n,lO ,optN, su, b)::rest) ->
-              let lO = getParam [] lO
+              let lO = getParam [] lO in
               let env = IdMap.add n {name = n; param = lO; returnType = CLASS optN; static = o2} env
               in getMeth env rest
             | [] -> env
           )
         in
-        let methode0 : methodeData IdMap.t = getMeth IdMap.empty lmeth
+        (* let methode0 : methodeData IdMap.t = getMeth IdMap.empty lmeth *)
+        let methode0 = IdMap.empty
         in
         let class_decl : classData = {
           champ = champ0;
