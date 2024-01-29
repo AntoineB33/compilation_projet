@@ -30,13 +30,8 @@ type methodeData = {
 }
 
 type classData = {
-
-(*compile pas à cause de IdMap*)
-
-  (* champ : (string*champData) IdMap.t; *)
   champ : champData list;
   methode : methodeData IdMap.t;
-
 
   construct : methodeData option;
   parent : idClass option;
@@ -65,42 +60,52 @@ let rec is_child_of (idClassChild : idClass) (idClassParent : idClass) (e : env)
 
 
 
-let is_methode (methode : methodeData) (idMethode : id)  (lparam : valueType list) (typeRetour : valueType ) : bool =
-
-    (* let verif_param (p1 : valueType) (p2 : valueType) : bool =
-            match (p1,p2) with
-                | (INT i1, INT i2)  -> i1 = i2
-                | (STR i1, STR i2)  -> i1 = i2
-                | (CLASS i1,CLASS i2) -> i1 = i2
-                | _ -> false
-    in
-    let rec verif_lParam (lp1 : valueType list) (lp2 : valueType list) : bool =
-        if List.length lp1 = List.length lp2
-        then match (lp1,lp2) with
-            | ([],[]) -> true
-            | (p1::tp1,p2::tp2)->
-                if (verif_param p1 p2)
-                then (verif_lParam tp1 tp2)
-                else false
-            | _ -> false
-        else false
-    in
+let is_methode (methode : methodeData) (idMethode : id)  (lparam : champData list) (typeRetour : valueType ) : bool =
+  (*verification du nom du param*)  
+  let verif_name_param (p1 : string) (p2 : string) : bool =
+      if p1 = p2 then true else false
+  in
+  (*verification du type du param*)
+  let verif_type_param (p1 : valueType) (p2 : valueType) : bool =
+          match (p1,p2) with
+              | (INT i1, INT i2)  -> i1 = i2
+              | (STR i1, STR i2)  -> i1 = i2
+              | (CLASS i1,CLASS i2) -> i1 = i2
+              | _ -> false
+  in
+  (*verification du param : nom + type*)
+  let verif_param (p1 : champData) (p2 : champData) : bool =
+    if (verif_type_param p1.value p2.value) then (verif_name_param p1.name p2.name)
+    else false
+  in
+  (*verifiaction de la liste de param*)
+  let rec verif_lParam (lp1 : champData list) (lp2 : champData list) : bool =
+    if List.length lp1 = List.length lp2
+    then match (lp1,lp2) with
+        | ([],[]) -> true
+        | (p1::tp1,p2::tp2)->
+            if (verif_name_param p1.name p2.name)
+            then  (verif_lParam tp1 tp2)
+            else false
+        | _ -> false
+    else false
+  in
     
-       
-    if (verif_param typeRetour methode.returnType)
-        && (idMethode = methode.name)
-    then verif_lParam methode.param lparam   
-    else false *)
-    false
+  (*verification du retour et nom de la methode*)     
+  if (verif_type_param typeRetour methode.returnType)
+      && (idMethode = methode.name)
+  
+  then verif_lParam methode.param lparam   
+  else false
 
 
     
     
 
 (*parent uniquement*)        
-let rec is_methode_of_parent (e : env) (idClassNow : idClass) (idMethode : id) (lparam : valueType list) (typeRetour : valueType ) : bool =
+let rec is_methode_of_parent (e : env) (idClassNow : idClass) (idMethode : id) (lparam : champData list) (typeRetour : valueType ) : bool =
     (* Recherche dans le parent suivant *)
-    let rec search_in  (e : env) (idClassOPT : idClass option) (idMethode : id) (lparam : valueType list) (typeRetour : valueType ) : bool =
+    let rec search_in  (e : env) (idClassOPT : idClass option) (idMethode : id) (lparam : champData list) (typeRetour : valueType ) : bool =
         match idClassOPT with
         | None -> false
         | Some i -> is_methode_of_parent e i idMethode lparam typeRetour
@@ -130,7 +135,7 @@ let rec is_methode_of_parent (e : env) (idClassNow : idClass) (idMethode : id) (
 
      
 (*classe uniquement sans parent*)
-let rec is_methode_of (e : env) (idClassNow : idClass) (idMethode : id) (lparam : valueType list) (typeRetour : valueType )  : bool=
+let rec is_methode_of (e : env) (idClassNow : idClass) (idMethode : id) (lparam : champData list) (typeRetour : valueType )  : bool=
   (* chercher la class dans map*)
   match IdClassMap.find_opt idClassNow e with
     | None   -> false     (*la classe n'existe pas*)
@@ -141,9 +146,33 @@ let rec is_methode_of (e : env) (idClassNow : idClass) (idMethode : id) (lparam 
                     then true  (* méthode trouvée*)
                     else false
     
-let rec can_override (e : env) (idClassNow : idClass) (idMethode : id)  (lparam : valueType list) (typeRetour : valueType )  : bool =
+let rec can_override (e : env) (idClassNow : idClass) (idMethode : id)  (lparam : champData list) (typeRetour : valueType )  : bool =
   is_methode_of_parent e idClassNow idMethode lparam typeRetour
 
+
+
+
+let is_constructor_of (e :env) (idClassNow : idClass) (idConstruct : id) (lparam : champData list) : bool =
+  match IdClassMap.find_opt idClassNow e with
+  | None  -> false
+  | Some dn -> 
+      match dn.construct with
+      | None -> false (*zero constructeur*)
+      | Some c -> if is_methode c idConstruct lparam c.returnType
+          then true
+          else false
+
+
+
+let has_constructor (e: env) (idClassNow : idClass) : bool = 
+  match IdClassMap.find_opt idClassNow e with
+  | None -> false
+  | Some dn ->
+      match dn.construct with
+      | None -> false (* creer un constructeur*)
+      | Some mapConst -> true
+
+      
 let runVC2 ast =
   (match ast with
     |(class_decl::rest, instruc) -> 
@@ -177,7 +206,7 @@ let runVC ast =
             let rec getIdent env l0 vlt =
               (match l0 with
                 ((o1,n)::rest) ->
-                  let env = env @ (n vlt)
+                  let env = env @ [(n, vlt)]
                   in getIdent env rest vlt
                 | [] -> env)
             in
@@ -192,7 +221,7 @@ let runVC ast =
             let champ0 = getChamps [] lchamp
             in
             let class_decl : classData = {
-              champ = [];
+              champ = champ0;
               methode = IdMap.empty;
               construct = None;
               parent = parent;
