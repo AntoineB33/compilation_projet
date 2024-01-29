@@ -1,0 +1,44 @@
+
+    (* Appel de la fonction can_override pour vérifier les méthodes de la classe *)
+    List.iter (fun method_decl ->
+      let method_name = method_decl.method_name in
+      if can_override method_name class_decl.class_name ast then
+        (* La méthode peut être override, effectuez les vérifications nécessaires *)
+        (* ... *)
+      else
+        (* La méthode ne peut pas être override, signalez une erreur si nécessaire *)
+        (* ... *)
+    ) class_decl.methods;
+    runVC rest  (* Appel récursif pour traiter les classes suivantes *)
+
+
+
+    
+  | (class_list, prog) -> (*raise (VC_error "nul")*)
+    (* Iterate through each class and perform validations *)
+    let rec validate_classes env class_list =
+      match class_list with
+      | [] -> ()  (* No more classes to validate *)
+      | (class_name, class_data) :: rest_classes ->
+        (* Validate the current class *)
+        validate_class env class_name class_data;
+        (* Recursively validate the rest of the classes *)
+        validate_classes env rest_classes
+    in
+    validate_classes IdClassMap.empty class_list
+
+
+    
+let rec runVC ast =
+  match ast with
+  | (class_decl::rest, instruc) -> 
+    List.iter (fun method_decl ->
+      if can_override method_decl.name class_decl.class_name ast then
+        (* La méthode peut être override, effectuez les vérifications nécessaires *)
+        1+1
+      else
+        (* La méthode ne peut pas être override, signalez une erreur si nécessaire *)
+        1+1
+    ) class_decl.methods;
+    runVC (rest, instruc)
+  | ([], instruc) -> raise (VC_error "nul")
