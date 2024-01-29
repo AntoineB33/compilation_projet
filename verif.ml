@@ -1,4 +1,4 @@
-(*open Ast
+open Ast
 
 type id = string
 type idClass = string
@@ -22,7 +22,7 @@ type champData = {
 
 type methodeData = {
   name : string;
-  param : valueType list;
+  param : champData list;
   returnType : valueType;
 
   (*override : bool;*)
@@ -33,7 +33,8 @@ type classData = {
 
 (*compile pas à cause de IdMap*)
 
-  champ : string*champData IdMap.t;
+  (* champ : (string*champData) IdMap.t; *)
+  champ : champData list;
   methode : methodeData IdMap.t;
 
 
@@ -66,7 +67,7 @@ let rec is_child_of (idClassChild : idClass) (idClassParent : idClass) (e : env)
 
 let is_methode (methode : methodeData) (idMethode : id)  (lparam : valueType list) (typeRetour : valueType ) : bool =
 
-    let verif_param (p1 : valueType) (p2 : valueType) : bool =
+    (* let verif_param (p1 : valueType) (p2 : valueType) : bool =
             match (p1,p2) with
                 | (INT i1, INT i2)  -> i1 = i2
                 | (STR i1, STR i2)  -> i1 = i2
@@ -89,7 +90,8 @@ let is_methode (methode : methodeData) (idMethode : id)  (lparam : valueType lis
     if (verif_param typeRetour methode.returnType)
         && (idMethode = methode.name)
     then verif_lParam methode.param lparam   
-    else false
+    else false *)
+    false
 
 
     
@@ -141,5 +143,80 @@ let rec is_methode_of (e : env) (idClassNow : idClass) (idMethode : id) (lparam 
     
 let rec can_override (e : env) (idClassNow : idClass) (idMethode : id)  (lparam : valueType list) (typeRetour : valueType )  : bool =
   is_methode_of_parent e idClassNow idMethode lparam typeRetour
-*)
-let runVC _ = ()
+
+let runVC2 ast =
+  (match ast with
+    |(class_decl::rest, instruc) -> 
+        (match class_decl with
+        |(class_name, params, parent, lchamp, lmeth) ->
+            let rec getChamps lchamp0 = 
+              (match lchamp0 with
+                  (o1, l0, n) -> raise (VC_error "Method declarations in class are not valid."))
+            in
+            let champ0 = getChamps lchamp in
+            raise (VC_error "Method declarations in class are not valid.")
+        | _ -> raise (VC_error "Method declarations in class are not valid."))
+    | _ -> raise (VC_error "Method declarations in class are not valid."))
+
+let runVC ast =
+  let rec runVCRec env ast =
+    (* Helper function to check if a given method is valid in the current class or its parents *)
+    let rec check_method_validity e idClassNow idMethode lparam typeRetour =
+      if is_methode_of e idClassNow idMethode lparam typeRetour then
+        true
+      else if can_override e idClassNow idMethode lparam typeRetour then
+        true
+      else
+        false
+    in
+
+    (match ast with
+      (class_decl::rest, instruc) ->
+        (match class_decl with
+          (class_name, params, parent, lchamp, lmeth) ->
+            let rec getIdent env l0 vlt =
+              (match l0 with
+                ((o1,n)::rest) ->
+                  let env = env @ (n vlt)
+                  in getIdent env rest vlt
+                | [] -> env)
+            in
+            let rec getChamps env lchamp0 = 
+              (match lchamp0 with
+                ((o1, l0, n)::rest) -> 
+                  let env = getIdent env l0 n
+                  in getChamps env lchamp0
+                | [] -> env
+              )
+            in
+            let champ0 = getChamps [] lchamp
+            in
+            let class_decl : classData = {
+              champ = [];
+              methode = IdMap.empty;
+              construct = None;
+              parent = parent;
+            } in
+            let env = IdClassMap.add class_name class_decl env in
+            (* Check the validity of method declarations *)
+            let check_methods_validity e class_decl =
+              let check_method_validity_wrapper idMethode methode_data =
+                true
+                (* let lparam = methode_data.param in
+                let typeRetour = methode_data.returnType in
+                if check_method_validity e class_name idMethode lparam typeRetour then
+                  true
+                else
+                  raise (VC_error ("Method '" ^ idMethode ^ "' in class '" ^ class_name ^ "' is not valid.")) *)
+              in
+              IdMap.for_all check_method_validity_wrapper class_decl.methode
+            in
+
+            if check_methods_validity env class_decl then
+              runVCRec env (rest, instruc)
+            else
+              raise (VC_error "Method declarations in class are not valid.")
+          | _ -> Printf.printf "Handling other cases\n")
+      | _ -> Printf.printf "Handling other cases\n")
+  in
+  runVCRec IdClassMap.empty ast
