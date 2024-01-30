@@ -300,12 +300,15 @@ let runVC ast =
                 None -> VOID
                 | Some n -> CLASS n
               ) in
+              if(n==class_name) {
+
+              }
               let env = IdMap.add n {name = n; param = lO; returnType = optNC; static = o2} env
               in getMeth env rest
             | [] -> env
           )
         in
-        let methode0 : methodeData IdMap.t = getMeth IdMap.empty lmeth
+        let methode0 : methodeData IdMap.t = getMeth IdMap.empty  lmeth
         (* let methode0 = IdMap.empty *)
         in
         let class_decl : classData = {
