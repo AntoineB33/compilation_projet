@@ -286,7 +286,7 @@ let rec getParam e lO =
   
 let rec getMeth e construct0 lmeth0 class_name = 
   (match lmeth0 with
-    ((o1, o2, n,lO ,optN, su, b)::rest) ->
+    ((o1, o2, n, lO ,optN, su, b)::rest) ->
       let lO = getParam [] lO in
       let optNC = (match optN with
         None -> VOID
