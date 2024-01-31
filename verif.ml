@@ -253,19 +253,18 @@ let extend_is_correct (e: env) (idClass : idClass) (idExtend : idClass) : bool =
 
 (*=======================================================================*)
 
+let rec getIdent e l0 vlt =
+  (match l0 with
+    ((o1,n)::rest) ->
+      let e = e @ [{name = n; value = CLASS vlt}]
+      in getIdent e rest vlt
+    | [] -> e)
 
 let runVC ast =
 
   let class_decl_is_correct e class_decl =
     (match class_decl with
       (class_name, params, parent, lchamp, lmeth) ->
-        let rec getIdent e l0 vlt =
-          (match l0 with
-            ((o1,n)::rest) ->
-              let e = e @ [{name = n; value = CLASS vlt}]
-              in getIdent e rest vlt
-            | [] -> e)
-        in
         let rec getChamps e lchamp0 = 
           (match lchamp0 with
             ((o1, l0, n)::rest) -> 
@@ -301,11 +300,11 @@ let runVC ast =
                 | Some n -> CLASS n
               ) in
               let construct0 =
-                if n==class_name then
-                  if construct0 == None then
+                if n=class_name then
+                  (if construct0 = None then
                     Some {name = n; param = lO; returnType = optNC; static = o2}
                   else
-                    raise (VC_error "Constructeur défini plusieurs fois.")
+                    raise (VC_error "Constructeur défini plusieurs fois."))
                 else
                     construct0
               in
