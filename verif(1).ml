@@ -302,24 +302,21 @@ let runVC ast =
               ) in
               let construct0 =
                 if n==class_name then
-                  if construct0 == None then
                     Some {name = n; param = lO; returnType = optNC; static = o2}
-                  else
-                    raise (VC_error "Constructeur défini plusieurs fois.")
                 else
                     construct0
               in
               let e = IdMap.add n {name = n; param = lO; returnType = optNC; static = o2} e
               in getMeth e construct0 rest
-            | [] -> e, construct0
+            | [] -> e
           )
         in
-        let (methode0, construct0) = getMeth IdMap.empty None lmeth
+        let (methode0 construct0) = getMeth IdMap.empty None lmeth
         in
         let class_decl : classData = {
           champ = champ0;
           methode = methode0;
-          construct = construct0;
+          construct = None;
           parent = parent;
         } in
         let e = IdClassMap.add class_name class_decl e in
@@ -369,4 +366,4 @@ let runVC ast =
       | ([],instruc) -> instruc_is_correct e ([],instruc)
       | _ -> e)
   in
-  runVCRec (init_env ()) ast
+  runVCRec init_env ast
