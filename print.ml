@@ -64,10 +64,12 @@ let rec print_class (c: classe) : unit =
       match c with
          | (class_name, params, parent0, lchamp, lmeth) -> 
             print_string "<CLASS> "; print_string class_name; print_string " <EXTENDS> ";
-            if parent0 <> None then
-            print_string parent0; print_string " <BEGIN>\n";
-            List.iter (print_decl 1) lchamp;
-            List.iter (print_decl 1) lmeth;
+            match parent0 with
+                | None -> print_string "<NONE>\n"
+                | Some parent -> print_string parent; print_string "\n";
+            ; print_string " <BEGIN>\n";
+            (* List.iter (print_decl 1) lchamp;
+            List.iter (print_decl 1) lmeth; *)
             print_string "<END>\n"
 
 
