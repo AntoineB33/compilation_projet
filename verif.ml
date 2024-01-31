@@ -32,6 +32,7 @@ type methodeData = {
 type classData = {
   champ : champData list;
   methode : methodeData IdMap.t;
+  param : champData list;
 
   construct : methodeData option;
   parent : idClass option;
@@ -49,6 +50,7 @@ let init_env () =
     let integer : classData = {
         champ= [];
         methode= (IdMap.add "toString" toString integerMethodes);
+        param = [];
         construct= None; (* pas besoin car on ne peut appeler Integer *)
         parent= None
     } in
@@ -60,6 +62,7 @@ let init_env () =
     let str : classData = {
         champ= [];
         methode= (IdMap.add "print" print (IdMap.add "println" println strMethodes));
+        param = [];
         construct= None; (* pas besoin car on ne peut appeler String *)
         parent= None
     } in
@@ -316,15 +319,18 @@ let rec check_method_validity e idClassNow idMethode lparam typeRetour =
 
 let addClassDecl e class_decl =
   (match class_decl with
-    (class_name, params, parent0, lchamp, lmeth) ->
+    (class_name, lO, parent0, lchamp, lmeth) ->
       let champ0 : champData list = getChamps [] lchamp
       in
       let (methode0, construct0) = getMeth IdMap.empty None lmeth class_name
+      in
+      let param0 = getParam [] lO
       in
       let class_decl : classData = 
         {
           champ = champ0;
           methode = methode0;
+          param = param0;
           construct = construct0;
           parent = parent0;
         }
