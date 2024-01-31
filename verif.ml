@@ -260,107 +260,100 @@ let rec getIdent e l0 vlt =
       in getIdent e rest vlt
     | [] -> e)
 
-let runVC ast =
+let rec getChamps e lchamp0 = 
+  (match lchamp0 with
+    ((o1, l0, n)::rest) -> 
+      let e = getIdent e l0 n
+      in getChamps e rest
+    | [] -> e
+  )
 
-  let class_decl_is_correct e class_decl =
-    (match class_decl with
-      (class_name, params, parent, lchamp, lmeth) ->
-        let rec getChamps e lchamp0 = 
-          (match lchamp0 with
-            ((o1, l0, n)::rest) -> 
-              let e = getIdent e l0 n
-              in getChamps e rest
-            | [] -> e
-          )
-        in
-        let champ0 : champData list = getChamps [] lchamp
-        in
-        let rec getSubParam e lO =
-          (match lO with
-            (par::rest, n) -> 
-              let e = e @ [{name = par; value = CLASS n}]
-              in getSubParam e (rest, n)
-            |([], n) -> e
-          )
-        in
-        let rec getParam e lO =
-          (match lO with
-            li::rest ->
-              let e = getSubParam e li
-              in getParam e rest
-            | [] -> e
-          )
-        in
-        let rec getMeth e construct0 lmeth0 = 
-          (match lmeth0 with
-            ((o1, o2, n,lO ,optN, su, b)::rest) ->
-              let lO = getParam [] lO in
-              let optNC = (match optN with
-                None -> VOID
-                | Some n -> CLASS n
-              ) in
-              let construct0 =
-                if n=class_name then
-                  (if construct0 = None then
-                    Some {name = n; param = lO; returnType = optNC; static = o2}
-                  else
-                    raise (VC_error "Constructeur défini plusieurs fois."))
-                else
-                    construct0
-              in
-              let e = IdMap.add n {name = n; param = lO; returnType = optNC; static = o2} e
-              in getMeth e construct0 rest
-            | [] -> e, construct0
-          )
-        in
-        let (methode0, construct0) = getMeth IdMap.empty None lmeth
-        in
-        let class_decl : classData = {
-          champ = champ0;
-          methode = methode0;
-          construct = construct0;
-          parent = parent;
-        } in
-        let e = IdClassMap.add class_name class_decl e in
-        
-        (* Check the validity of method declarations *)
-        let check_methods_validity e class_decl =
-          let check_method_validity_wrapper idMethode methode_data =
-            true
-            (* let lparam = methode_data.param in
-            let typeRetour = methode_data.returnType in
-            if check_method_validity e class_name idMethode lparam typeRetour then
-              true
-            else
-              raise (VC_error ("Method '" ^ idMethode ^ "' in class '" ^ class_name ^ "' is not valid.")) *)
-          in
-          IdMap.for_all check_method_validity_wrapper class_decl.methode
-        in
+let rec getSubParam e lO =
+  (match lO with
+    (par::rest, n) -> 
+      let e = e @ [{name = par; value = CLASS n}]
+      in getSubParam e (rest, n)
+    |([], n) -> e
+  )
+
+let rec getParam e lO =
+  (match lO with
+    li::rest ->
+      let e = getSubParam e li
+      in getParam e rest
+    | [] -> e
+  )
   
-        if check_methods_validity e class_decl then
-          e
+let rec getMeth e construct0 lmeth0 class_name = 
+  (match lmeth0 with
+    ((o1, o2, n,lO ,optN, su, b)::rest) ->
+      let lO = getParam [] lO in
+      let optNC = (match optN with
+        None -> VOID
+        | Some n -> CLASS n
+      ) in
+      let construct0 =
+        if n=class_name then
+          (if construct0 = None then
+            Some {name = n; param = lO; returnType = optNC; static = o2}
+          else
+            raise (VC_error "Constructeur défini plusieurs fois."))
         else
-          raise (VC_error "Method declarations in class are not valid.")
-      | _ -> e
-      )
-  
-  in
+            construct0
+      in
+      let e = IdMap.add n {name = n; param = lO; returnType = optNC; static = o2} e
+      in getMeth e construct0 rest class_name
+    | [] -> e, construct0
+  )
 
-  let instruc_is_correct e instruc = e
+let rec check_method_validity e idClassNow idMethode lparam typeRetour =
+  if is_methode_of e idClassNow idMethode lparam typeRetour then
+    true
+  else if can_override e idClassNow idMethode lparam typeRetour then
+    true
+  else
+    false
 
-  in
+let class_decl_is_correct e class_decl =
+  (match class_decl with
+    (class_name, params, parent, lchamp, lmeth) ->
+      let champ0 : champData list = getChamps [] lchamp
+      in
+      let (methode0, construct0) = getMeth IdMap.empty None lmeth class_name
+      in
+      let class_decl : classData = {
+        champ = champ0;
+        methode = methode0;
+        construct = construct0;
+        parent = parent;
+      } in
+      let e = IdClassMap.add class_name class_decl e in
+      
+      (* Check the validity of method declarations *)
+      let check_methods_validity e class_decl =
+        let check_method_validity_wrapper idMethode methode_data =
+          true
+          (* let lparam = methode_data.param in
+          let typeRetour = methode_data.returnType in
+          if check_method_validity e class_name idMethode lparam typeRetour then
+            true
+          else
+            raise (VC_error ("Method '" ^ idMethode ^ "' in class '" ^ class_name ^ "' is not valid.")) *)
+        in
+        IdMap.for_all check_method_validity_wrapper class_decl.methode
+      in
 
-  let rec runVCRec e ast =
-    let rec check_method_validity e idClassNow idMethode lparam typeRetour =
-      if is_methode_of e idClassNow idMethode lparam typeRetour then
-        true
-      else if can_override e idClassNow idMethode lparam typeRetour then
-        true
+      if check_methods_validity e class_decl then
+        e
       else
-        false
-    in
+        raise (VC_error "Method declarations in class are not valid.")
+    | _ -> e
+  )
 
-
+let runVC ast =
+  let instruc_is_correct e instruc = e
+  in
+  let rec runVCRec e ast =
     (match ast with
       (class_decl::rest, instruc) -> 
         let e = class_decl_is_correct e class_decl
