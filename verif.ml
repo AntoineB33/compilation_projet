@@ -314,51 +314,40 @@ let rec check_method_validity e idClassNow idMethode lparam typeRetour =
   else
     false
 
-let class_decl_is_correct e class_decl =
+let addClassDecl e class_decl =
   (match class_decl with
-    (class_name, params, parent, lchamp, lmeth) ->
+    (class_name, params, parent0, lchamp, lmeth) ->
       let champ0 : champData list = getChamps [] lchamp
       in
       let (methode0, construct0) = getMeth IdMap.empty None lmeth class_name
       in
-      let class_decl : classData = {
-        champ = champ0;
-        methode = methode0;
-        construct = construct0;
-        parent = parent;
-      } in
-      let e = IdClassMap.add class_name class_decl e in
-      
-      (* Check the validity of method declarations *)
-      let check_methods_validity e class_decl =
-        let check_method_validity_wrapper idMethode methode_data =
-          true
-          (* let lparam = methode_data.param in
-          let typeRetour = methode_data.returnType in
-          if check_method_validity e class_name idMethode lparam typeRetour then
-            true
-          else
-            raise (VC_error ("Method '" ^ idMethode ^ "' in class '" ^ class_name ^ "' is not valid.")) *)
-        in
-        IdMap.for_all check_method_validity_wrapper class_decl.methode
+      let class_decl : classData = 
+        {
+          champ = champ0;
+          methode = methode0;
+          construct = construct0;
+          parent = parent0;
+        }
       in
-
-      if check_methods_validity e class_decl then
-        e
-      else
-        raise (VC_error "Method declarations in class are not valid.")
+      IdClassMap.add class_name class_decl e
     | _ -> e
   )
 
+let check_all_class_decl_validity e = e
+  
+let instruc_is_correct e instruc = e
+
 let runVC ast =
-  let instruc_is_correct e instruc = e
-  in
   let rec runVCRec e ast =
     (match ast with
       (class_decl::rest, instruc) -> 
-        let e = class_decl_is_correct e class_decl
-        in runVCRec e (rest,instruc)
-      | ([],instruc) -> instruc_is_correct e ([],instruc)
+        let e = addClassDecl e class_decl
+        in
+        runVCRec e (rest,instruc)
+      | ([],instruc) -> 
+        check_all_class_decl_validity e;
+        instruc_is_correct e ([],instruc);
+        e;
       | _ -> e)
   in
   runVCRec (init_env ()) ast
