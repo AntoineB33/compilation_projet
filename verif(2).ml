@@ -20,7 +20,6 @@ end)
 type champData = {
   name : string;
   value : valueType;
-  static : bool;
 }
 
 type methodeData = {
@@ -210,19 +209,7 @@ let rec is_methode_of (e : env) (idClassNow : idClass) (idMethode : id) (lparam 
                     else false
     
 let rec can_override (e : env) (idClassNow : idClass) (idMethode : id)  (lparam : champData list) (typeRetour : valueType )  : bool =
-  let is_not_static =
-    (* chercher la class dans map*)
-    match IdClassMap.find_opt idClassNow e with
-      | None   -> false
-      | Some dn -> (*recherche de la methode*)
-          match IdMap.find_opt idMethode dn.methode with
-          | None -> false
-          | Some m -> if is_methode m idMethode lparam typeRetour
-                      then (m.static = false)
-                      else false 
-  in
-  is_not_static && is_methode_of_parent e idClassNow idMethode lparam typeRetour
-
+  is_methode_of_parent e idClassNow idMethode lparam typeRetour
 
 
 
@@ -289,15 +276,7 @@ let rec champ_list_is_correct (champs_list : champ list) (e : env) : bool =
 		
 (*===========================METHOD======================================*)
 
-let rec method_list_is_correct methode_list (e : env) (c : idClass) : bool = 
-  match methode_list with
-    | [] -> true
-    | m::ms -> true
-
-      (* is_methode_of e c m.name m.param m.returnType;
-      method_list_is_correct ms e c *)
-
-  
+let method_list_is_correct (methode_list : lmeth) (e : env) : bool = false
 
 (*===========================PARAMETER===================================*)
 
@@ -348,34 +327,6 @@ let extend_is_correct (idExtend : id option) (idClass : idClass) (e: env) : bool
                     | None -> false (*internal error*)
                     | Some classe -> not (extend_is_looping e idClass) && (extend_exist e extend)
 
-
-(*===========================EXPRESSION====================================*)
-
-let expression_is_correct (exp : expType) (e : env) : bool = true
-
-(*===========================ASSIGN=======================================*)
-
-let assign_is_correct (exp1 : expType) (exp2 : expType) (e : env) : bool = true (*on peut pas verifier le type des deux expression avec la structure*)
-
-(*===========================DECLARATION==================================*)
-
-let declar_list_is_correct (declar_list : declaV list) (e : env) : bool = parameter_list_is_correct declar_list e
-
-(*===========================INSTRUCTION==================================*)
-
-let rec instruction_is_correct (inst : instruc) (e : env) : bool = 
-	match inst with 
-		| RetrunSemi -> true
-		| Epr of exp -> expression_is_correct exp e
-		| Assign of (exp1,exp2) -> assign_is_correct exp1 exp2 e
-		| ITE of (exp,inst1,inst2) -> expression_is_correct exp e && instruction_is_correct inst1 e && instruction_is_correct inst2 e
-		| Bloc of (declar_list,instru_list) -> declar_list_is_correct declar_list e && 
-			match instru_list with 
-				| [] -> true
-				| i::is -> if instruction_is_correct i e then else false
-
-
-
 (*===========================CLASS========================================*)
 
 let class_is_correct (c : id * (param list) * (id option) * lchamp * lmeth) (e : env) : bool =
@@ -384,7 +335,7 @@ let class_is_correct (c : id * (param list) * (id option) * lchamp * lmeth) (e :
                 parameter_list_is_correct param_list e &&
                 extend_is_correct extend_option name e &&
                 champ_list_is_correct champ_list e &&
-                method_list_is_correct method_list e name
+                method_list_is_correct method_list e
 
 let rec class_list_is_correct (cl : classe list) (e : env) : bool =
     match cl with 
@@ -399,33 +350,25 @@ let instruction_is_correct (inst : instruc) (e : env) : bool = false
 
 (**==========================LECTURE DE L'ENV=============================**)
 
-let rec getIdent e methode0 l0 vlt static =
+let rec getIdent e l0 vlt =
   (match l0 with
-    ((auto,n)::rest) ->
-      let e = e @ [{name = n; value = CLASS vlt; static = static}]
-      in
-      let methode0 =
-        if auto then
-          IdMap.add n {name = n; param = []; returnType = CLASS vlt; static = false} methode0
-        else
-          methode0
-      in
-      getIdent e methode0 rest vlt static
-    | [] -> e, methode0)
+    ((o1,n)::rest) ->
+      let e = e @ [{name = n; value = CLASS vlt}]
+      in getIdent e rest vlt
+    | [] -> e)
 
-let rec getChamps e methode0 lchamp0 = 
+let rec getChamps e lchamp0 = 
   (match lchamp0 with
-    ((static, l0, n)::rest) -> 
-      let e, methode0 = getIdent e methode0 l0 n static
-      in
-      getChamps e methode0 rest
-    | [] -> (e, methode0)
+    ((o1, l0, n)::rest) -> 
+      let e = getIdent e l0 n
+      in getChamps e rest
+    | [] -> e
   )
 
 let rec getSubParam e lO =
   (match lO with
     (par::rest, n) -> 
-      let e = e @ [{name = par; value = CLASS n; static = false}]
+      let e = e @ [{name = par; value = CLASS n}]
       in getSubParam e (rest, n)
     |([], n) -> e
   )
@@ -460,12 +403,20 @@ let rec getMeth e construct0 lmeth0 class_name =
     | [] -> e, construct0
   )
 
+let rec check_method_validity e idClassNow idMethode lparam typeRetour =
+  if is_methode_of e idClassNow idMethode lparam typeRetour then
+    true
+  else if can_override e idClassNow idMethode lparam typeRetour then
+    true
+  else
+    false
+
 let addClassDecl e class_decl =
   (match class_decl with
     (class_name, lO, parent0, lchamp, lmeth) ->
-      let (champ0, methode0) = getChamps [] IdMap.empty lchamp
+      let champ0 : champData list = getChamps [] lchamp
       in
-      let (methode0, construct0) = getMeth methode0 None lmeth class_name
+      let (methode0, construct0) = getMeth IdMap.empty None lmeth class_name
       in
       let param0 = getParam [] lO
       in
@@ -481,20 +432,19 @@ let addClassDecl e class_decl =
       IdClassMap.add class_name class_decl e
   )
   
-let rec recup_env e ast =
-  match ast with
-    |(class_decl::rest, instruc) -> 
-      let e = addClassDecl e class_decl
-      in
-      recup_env e (rest,instruc)
-    | _ -> e
+  let rec recup_env e ast =
+    match ast with
+      |(class_decl::rest, instruc) -> 
+        let e = addClassDecl e class_decl
+        in
+        recup_env e (rest,instruc)
+      | _ -> e
 
 (**==========================RUNVC========================================**)
 
 let runVC (ast : classe list*instruc) : bool =
-  let e = recup_env (init_env ()) ast
-  in
-  match ast with
-      | ([],i) -> instruction_is_correct i e
-      | (cl,i) -> (class_list_is_correct cl e) && (instruction_is_correct i e)
-      | _ -> raise (VC_error "Le programme est vide.")
+    let e = recup_env (init_env ()) ast
+    in
+    match ast with
+        | ([],i) -> instruction_is_correct i e
+        | (cl,i) -> (class_list_is_correct cl e) && (instruction_is_correct i e)

@@ -60,6 +60,17 @@ let rec print_tab (n: int) : unit =
 let rec print_decl (tab: int) (d: declaV) : unit =
     print_tab tab; match d with (sl, s) -> ()
 
+(* let rec print_sub_champ (l: champ) : unit =
+   match l with
+
+let rec print_champ (tab: int) (l: champ) : unit =
+   match l with
+        | (o, lp, t) -> print_tab tab; print_string "<FIELD> ";
+         if o then print_string " <STATIC> ";
+         List.iter (fun s -> print_string s; print_string " ") lp;
+         print_string " <TYPE> ";
+         print_string t; print_string "\n"; print_lchamp tab lchamp; print_lmeth tab lmeth *)
+
 let rec print_class (c: classe) : unit =
       match c with
          | (class_name, params, parent0, lchamp, lmeth) -> 
@@ -68,8 +79,8 @@ let rec print_class (c: classe) : unit =
                 | None -> print_string "<NONE>\n"
                 | Some parent -> print_string parent; print_string "\n";
             ; print_string " <BEGIN>\n";
-            (* List.iter (print_decl 1) lchamp;
-            List.iter (print_decl 1) lmeth; *)
+            (* List.iter (print_champ 1) lchamp;
+            List.iter (print_lchamp 1) lmeth; *)
             print_string "<END>\n"
 
 
@@ -78,10 +89,10 @@ let rec print_instruct (tab: int) (i: instruc) : unit = match i with
     | Epr e -> print_tab tab; print_expr e; print_string ";\n"
     | Bloc(dl, il) -> 
         print_tab tab; print_string "{\n";
-        if dl <> [] then (List.iter (print_decl (tab + 1)) dl; print_string " <IS>\n");
+        if dl <> [] then (List.iter (print_decl (tab + 1)) dl; print_string "\n"; print_string "<IS>\n");
         List.iter (print_instruct (tab + 1)) il; print_tab tab; print_string "}\n"
     | ReturnSemi -> print_tab tab; print_string "<RETURN>;\n"
-    | Assign(e1, e2) -> print_tab tab; print_expr e1; print_string " := "; print_expr e2
+    | Assign(e1, e2) -> print_tab tab; print_expr e1; print_string " := "; print_expr e2; print_string ";\n"
     | ITE(cond, theni, elsei) ->
         print_tab tab; print_string "<IF>("; print_expr cond; print_string ")\n";
         print_tab tab; print_string "<THEN> {\n"; print_instruct (tab + 1) theni;
@@ -91,7 +102,7 @@ let rec print_instruct (tab: int) (i: instruc) : unit = match i with
 let print_all ast =
     match ast with
         |(lc,i) ->  List.iter print_class lc;
-                    print_string "<BEGIN> "; print_instruct 0 i; print_string " <END>\n"
+                    print_string "PROGRAMME PRINCIPAL : "; print_instruct 0 i; print_string " FIN DU PROGRAMME\n"
 
 
 
