@@ -365,14 +365,15 @@ let declar_list_is_correct (declar_list : declaV list) (e : env) : bool = parame
 
 let rec instruction_is_correct (inst : instruc) (e : env) : bool = 
 	match inst with 
-		| RetrunSemi -> true
-		| Epr of exp -> expression_is_correct exp e
+  | _ -> true
+		(* | RetrunSemi -> true *)
+		(* | Epr of exp -> expression_is_correct exp e
 		| Assign of (exp1,exp2) -> assign_is_correct exp1 exp2 e
 		| ITE of (exp,inst1,inst2) -> expression_is_correct exp e && instruction_is_correct inst1 e && instruction_is_correct inst2 e
 		| Bloc of (declar_list,instru_list) -> declar_list_is_correct declar_list e && 
 			match instru_list with 
 				| [] -> true
-				| i::is -> if instruction_is_correct i e then else false
+				| i::is -> if instruction_is_correct i e then else false *)
 
 
 
